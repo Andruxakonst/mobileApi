@@ -1,0 +1,2527 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "API for Umi CMS.",
+    "version": "1.0.1",
+    "title": "API for Uni CMS"
+  },
+  "host": "api.crowdfaster.com",
+  "basePath": "/",
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/user/login": {
+      "parameters": [],
+      "post": {
+        "summary": "Вход пользователя",
+        "operationId": "post-user-login",
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {
+                    "phone": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "pass": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -15,
+                  "massage": "Unauthorized.Error data for login",
+                  "debug": {
+                    "phone": "string",
+                    "email": "string",
+                    "pass": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                },
+                "pass": {
+                  "type": "string"
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "email": "7@yandex.ru",
+                  "phone": "79996567081",
+                  "pass": "123"
+                }
+              }
+            },
+            "description": "Запрос на получение данных юзера (авторизация по одному из полей email или phone). Если будут оба - выберет phone"
+          }
+        ],
+        "description": "Вход пользователя",
+        "tags": [
+          "user"
+        ]
+      }
+    },
+    "/user/reg": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Регистрация нового пользователя",
+        "description": "Регистрация нового пользователя",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                },
+                "pass": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "surname": {
+                  "type": "string"
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "email": "5@yandex.ru",
+                  "phone": "79996567081",
+                  "pass": "123",
+                  "name": "Имя",
+                  "surname": "Фамилия"
+                }
+              }
+            },
+            "description": "Регистрация нового пользователя"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Удачное выполнение",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "results": {
+                  "type": "object",
+                  "properties": {
+                    "fieldCount": {
+                      "type": "integer"
+                    },
+                    "affectedRows": {
+                      "type": "integer"
+                    },
+                    "insertId": {
+                      "type": "integer"
+                    },
+                    "info": {
+                      "type": "string"
+                    },
+                    "serverStatus": {
+                      "type": "integer"
+                    },
+                    "warningStatus": {
+                      "type": "integer"
+                    },
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "results": {
+                    "fieldCount": 0,
+                    "affectedRows": 1,
+                    "insertId": 8,
+                    "info": "",
+                    "serverStatus": 2,
+                    "warningStatus": 0,
+                    "token": "yJlbWFpbCI6IjdAeWFuZGV4LnJ1IiwidGVsIjoiNzk5OTY1NjcwODEifQ==e"
+                  }
+                }
+              }
+            },
+            "examples": {}
+          },
+          "400": {
+            "description": "error operation",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "": {
+            "description": "Регистрация успешна",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "results": {
+                  "type": "object",
+                  "properties": {
+                    "fieldCount": {
+                      "type": "integer"
+                    },
+                    "affectedRows": {
+                      "type": "integer"
+                    },
+                    "insertId": {
+                      "type": "integer"
+                    },
+                    "info": {
+                      "type": "string"
+                    },
+                    "serverStatus": {
+                      "type": "integer"
+                    },
+                    "warningStatus": {
+                      "type": "integer"
+                    },
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "results": {
+                    "fieldCount": 0,
+                    "affectedRows": 1,
+                    "insertId": 7,
+                    "info": "",
+                    "serverStatus": 2,
+                    "warningStatus": 0,
+                    "token": "yJlbWFpbCI6IjZAeWFuZGV4LnJ1IiwidGVsIjoiNzk5OTY1NjcwODEifQ==e"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "user-reg",
+        "x-internal": false
+      },
+      "parameters": []
+    },
+    "/user/balance": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Получение баланса пользователя",
+        "description": "Получение баланса пользователя",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "in": "header",
+            "name": "token",
+            "description": "Токен пользователя"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Удачное выполнение",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "balance": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": [
+                  {
+                    "id": 2,
+                    "balance": 4400
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "error operation",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "operationId": "user-balans"
+      }
+    },
+    "/user/edit": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Изменение данных польхователя",
+        "description": "Изменение данных польхователя",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Данные ползователя",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                },
+                "pass": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "name_company": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "email": "4@yandex.ru",
+                  "phone": "79996567081",
+                  "pass": "50415041",
+                  "data": {
+                    "name_company": "test_company"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "string",
+            "in": "header",
+            "name": "token",
+            "description": "токен пользователя"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated",
+            "schema": {
+              "type": "object",
+              "x-examples": {
+                "example-1": {
+                  "email": "4@yandex.ru",
+                  "phone": "79996567081",
+                  "pass": "50415041",
+                  "data": {
+                    "name_company": "test_company"
+                  }
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "error operation",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "operationId": "user-edit"
+      },
+      "parameters": []
+    },
+    "/ads/vip": {
+      "post": {
+        "tags": [
+          "ads"
+        ],
+        "summary": "Установка vip сообщения",
+        "description": "Установка vip сообщения.",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "id объявления",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "id": 48
+                }
+              }
+            }
+          },
+          {
+            "type": "string",
+            "in": "header",
+            "name": "token"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Удачное выполнение - OK"
+          },
+          "400": {
+            "description": "error operation",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "operationId": "ads-vip"
+      }
+    },
+    "/ads/up": {
+      "post": {
+        "tags": [
+          "ads"
+        ],
+        "summary": "Поднятие объявлений",
+        "description": "Поднятие объявлений.",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "id объявления",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User-id"
+            }
+          },
+          {
+            "type": "string",
+            "in": "header",
+            "name": "token"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Удачное выполнение -OK"
+          },
+          "400": {
+            "description": "error operation",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "operationId": "ads-up"
+      }
+    },
+    "/ads/turbo": {
+      "post": {
+        "tags": [
+          "ads"
+        ],
+        "summary": "Устновка турбо продажи объявлений",
+        "description": "Устновка турбо продажи объявлений.",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "id объявления",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "id": 48
+                }
+              }
+            }
+          },
+          {
+            "type": "string",
+            "in": "header",
+            "name": "token"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Удачное выполнение"
+          },
+          "400": {
+            "description": "error operation",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "operationId": "ads-turbo"
+      }
+    },
+    "/ads/list": {
+      "post": {
+        "summary": "Получение объявлений",
+        "operationId": "post-ads-list",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ads_id": {
+                    "type": "integer"
+                  },
+                  "ads_title": {
+                    "type": "string"
+                  },
+                  "ads_alias": {
+                    "type": "string"
+                  },
+                  "ads_text": {
+                    "type": "string"
+                  },
+                  "ads_id_cat": {
+                    "type": "integer"
+                  },
+                  "ads_datetime_add": {
+                    "type": "null"
+                  },
+                  "ads_datetime_view": {
+                    "type": "null"
+                  },
+                  "ads_id_user": {
+                    "type": "integer"
+                  },
+                  "ads_images": {
+                    "type": "string"
+                  },
+                  "ads_price": {
+                    "type": "integer"
+                  },
+                  "ads_address": {
+                    "type": "string"
+                  },
+                  "ads_latitude": {
+                    "type": "null"
+                  },
+                  "ads_longitude": {
+                    "type": "null"
+                  },
+                  "ads_metro_ids": {
+                    "type": "null"
+                  },
+                  "ads_period_publication": {
+                    "type": "string"
+                  },
+                  "ads_city_id": {
+                    "type": "integer"
+                  },
+                  "ads_status": {
+                    "type": "integer"
+                  },
+                  "ads_region_id": {
+                    "type": "integer"
+                  },
+                  "ads_country_id": {
+                    "type": "integer"
+                  },
+                  "ads_note": {
+                    "type": "null"
+                  },
+                  "ads_count_display": {
+                    "type": "integer"
+                  },
+                  "ads_currency": {
+                    "type": "string"
+                  },
+                  "ads_period_day": {
+                    "type": "integer"
+                  },
+                  "ads_update": {
+                    "type": "null"
+                  },
+                  "ads_sorting": {
+                    "type": "integer"
+                  },
+                  "ads_auction": {
+                    "type": "integer"
+                  },
+                  "ads_auction_duration": {
+                    "type": "null"
+                  },
+                  "ads_auction_price_sell": {
+                    "type": "integer"
+                  },
+                  "ads_auction_day": {
+                    "type": "integer"
+                  },
+                  "ads_area_ids": {
+                    "type": "null"
+                  },
+                  "ads_id_import": {
+                    "type": "null"
+                  },
+                  "ads_import_images": {
+                    "type": "null"
+                  },
+                  "ads_video": {
+                    "type": "null"
+                  },
+                  "ads_vip": {
+                    "type": "integer"
+                  },
+                  "ads_auto_renewal": {
+                    "type": "integer"
+                  },
+                  "ads_online_view": {
+                    "type": "integer"
+                  },
+                  "ads_price_old": {
+                    "type": "integer"
+                  },
+                  "ads_filter_tags": {
+                    "type": "string"
+                  },
+                  "ads_price_free": {
+                    "type": "integer"
+                  },
+                  "ads_available": {
+                    "type": "integer"
+                  },
+                  "ads_available_unlimitedly": {
+                    "type": "integer"
+                  },
+                  "country_name": {
+                    "type": "string"
+                  },
+                  "region_name": {
+                    "type": "string"
+                  },
+                  "city_name": {
+                    "type": "string"
+                  },
+                  "clients_name": {
+                    "type": "string"
+                  },
+                  "clients_surname": {
+                    "type": "null"
+                  },
+                  "category_board_name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": [
+                  {
+                    "ads_id": 45,
+                    "ads_title": "test 2",
+                    "ads_alias": "test-2",
+                    "ads_text": "text2 text2 text2 text2",
+                    "ads_id_cat": 27,
+                    "ads_datetime_add": null,
+                    "ads_datetime_view": null,
+                    "ads_id_user": 2,
+                    "ads_images": "https://klike.net/uploads/posts/2019-05/1556708032_1.jpg",
+                    "ads_price": 20000,
+                    "ads_address": "address2 address2 address2 address2",
+                    "ads_latitude": null,
+                    "ads_longitude": null,
+                    "ads_metro_ids": null,
+                    "ads_period_publication": "2022-08-10T10:20:56.000Z",
+                    "ads_city_id": 376,
+                    "ads_status": 1,
+                    "ads_region_id": 33,
+                    "ads_country_id": 1,
+                    "ads_note": null,
+                    "ads_count_display": 0,
+                    "ads_currency": "RUB",
+                    "ads_period_day": 30,
+                    "ads_update": null,
+                    "ads_sorting": 0,
+                    "ads_auction": 0,
+                    "ads_auction_duration": null,
+                    "ads_auction_price_sell": 0,
+                    "ads_auction_day": 1,
+                    "ads_area_ids": null,
+                    "ads_id_import": null,
+                    "ads_import_images": null,
+                    "ads_video": null,
+                    "ads_vip": 0,
+                    "ads_auto_renewal": 0,
+                    "ads_online_view": 0,
+                    "ads_price_old": 0,
+                    "ads_filter_tags": "Марка:ВАЗ;Модель:2106 M;Коробка:Механическая;Тип кузова:Седан;Мощность, л.с:80;Объем, л:1.5;Состояние:Не битый;Руль:Левый",
+                    "ads_price_free": 0,
+                    "ads_available": 0,
+                    "ads_available_unlimitedly": 1,
+                    "country_name": "Россия",
+                    "region_name": "Краснодарский Край",
+                    "city_name": "Сочи",
+                    "clients_name": "Test",
+                    "clients_surname": null,
+                    "category_board_name": "Автомобили"
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -1,
+                  "massage": "Unauthorized. Missing auth in headers",
+                  "debug": {}
+                }
+              }
+            }
+          }
+        },
+        "description": "Получение списка объявлений.",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "limit": {
+                  "type": "integer"
+                },
+                "offset": {
+                  "type": "integer"
+                },
+                "id": {
+                  "type": "integer"
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "limit": 10,
+                  "offset": 0,
+                  "id": 45
+                }
+              }
+            },
+            "description": "данные для ограничия выдачи"
+          }
+        ],
+        "tags": [
+          "ads"
+        ]
+      }
+    },
+    "/ads/AddMass": {
+      "post": {
+        "tags": [
+          "ads"
+        ],
+        "summary": "Массовое добавление объявлений",
+        "description": "Массовое добавление объявлений.",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "ads_data",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ads_data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "alias": {
+                        "type": "string"
+                      },
+                      "text": {
+                        "type": "string"
+                      },
+                      "id_cat": {
+                        "type": "integer"
+                      },
+                      "images": {
+                        "type": "string"
+                      },
+                      "price": {
+                        "type": "integer"
+                      },
+                      "address": {
+                        "type": "string"
+                      },
+                      "period_publication": {
+                        "type": "string"
+                      },
+                      "city_id": {
+                        "type": "integer"
+                      },
+                      "country_id": {
+                        "type": "integer"
+                      },
+                      "status": {
+                        "type": "integer"
+                      },
+                      "region_id": {
+                        "type": "integer"
+                      },
+                      "currency": {
+                        "type": "string"
+                      },
+                      "period_day": {
+                        "type": "integer"
+                      },
+                      "filter_tags": {
+                        "type": "string"
+                      },
+                      "available_unlimitedly": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "ads_data": [
+                    {
+                      "title": "test 3",
+                      "alias": "test-3",
+                      "text": "text3 text3 text3 text3",
+                      "id_cat": 27,
+                      "images": "[]",
+                      "price": 20000,
+                      "address": "address2 address2 address2 address2",
+                      "period_publication": "2022-08-10 13:20:56",
+                      "city_id": 376,
+                      "country_id": 1,
+                      "status": 1,
+                      "region_id": 33,
+                      "currency": "RUB",
+                      "period_day": 30,
+                      "filter_tags": "Марка:ВАЗ;Модель:2106 M;Коробка:Механическая;Тип кузова:Седан;Мощность, л.с:80;Объем, л:1.5;Состояние:Не битый;Руль:Левый",
+                      "available_unlimitedly": 1
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "type": "string",
+            "in": "header",
+            "name": "token"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Удачное выполнение"
+          },
+          "400": {
+            "description": "error operation",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "": {
+            "description": "Addedet 1 lines"
+          }
+        },
+        "operationId": "ads-add-mass"
+      },
+      "parameters": []
+    },
+    "/ads/category": {
+      "get": {
+        "summary": "Получение отдельной категории",
+        "tags": [
+          "ads"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "category_board_id": {
+                    "type": "integer"
+                  },
+                  "category_board_name": {
+                    "type": "string"
+                  },
+                  "category_board_title": {
+                    "type": "string"
+                  },
+                  "category_board_text": {
+                    "type": "string"
+                  },
+                  "category_board_image": {
+                    "type": "string"
+                  },
+                  "category_board_description": {
+                    "type": "string"
+                  },
+                  "category_board_alias": {
+                    "type": "string"
+                  },
+                  "category_board_h1": {
+                    "type": "string"
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": [
+                  {
+                    "category_board_id": 17,
+                    "category_board_name": "Транспорт",
+                    "category_board_title": "Транспорт",
+                    "category_board_text": "",
+                    "category_board_image": "45438124802acad2c80d90c5c49b0dde.png",
+                    "category_board_description": "",
+                    "category_board_alias": "transport",
+                    "category_board_h1": "Транспорт"
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -6,
+                  "massage": "Login or password is not correct.",
+                  "debug": {}
+                }
+              }
+            }
+          },
+          "": {
+            "description": "Категория",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "category_board_id": {
+                    "type": "integer"
+                  },
+                  "category_board_name": {
+                    "type": "string"
+                  },
+                  "category_board_title": {
+                    "type": "string"
+                  },
+                  "category_board_text": {
+                    "type": "string"
+                  },
+                  "category_board_image": {
+                    "type": "string"
+                  },
+                  "category_board_description": {
+                    "type": "string"
+                  },
+                  "category_board_alias": {
+                    "type": "string"
+                  },
+                  "category_board_h1": {
+                    "type": "string"
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": [
+                  {
+                    "category_board_id": 27,
+                    "category_board_name": "Автомобили",
+                    "category_board_title": "Автомобили",
+                    "category_board_text": "",
+                    "category_board_image": "",
+                    "category_board_description": "",
+                    "category_board_alias": "avtomobili",
+                    "category_board_h1": "Автомобили"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "operationId": "get-ads-category",
+        "description": "Получение отдельной категории",
+        "parameters": [
+          {
+            "type": "string",
+            "in": "query",
+            "name": "id",
+            "description": "id категории"
+          }
+        ]
+      },
+      "parameters": []
+    },
+    "/ads/categorys": {
+      "get": {
+        "summary": "Получение всех категорий",
+        "tags": [
+          "ads"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "category_board_id": {
+                    "type": "integer"
+                  },
+                  "category_board_name": {
+                    "type": "string"
+                  },
+                  "category_board_title": {
+                    "type": "string"
+                  },
+                  "category_board_text": {
+                    "type": "string"
+                  },
+                  "category_board_image": {
+                    "type": "string"
+                  },
+                  "category_board_description": {
+                    "type": "string"
+                  },
+                  "category_board_alias": {
+                    "type": "string"
+                  },
+                  "category_board_h1": {
+                    "type": "string"
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": [
+                  {
+                    "category_board_id": 27,
+                    "category_board_name": "Автомобили",
+                    "category_board_title": "Автомобили",
+                    "category_board_text": "",
+                    "category_board_image": "",
+                    "category_board_description": "",
+                    "category_board_alias": "avtomobili",
+                    "category_board_h1": "Автомобили"
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -6,
+                  "massage": "Login or password is not correct.",
+                  "debug": {}
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-ads-categorys",
+        "description": "Получение всех категорий",
+        "parameters": []
+      },
+      "parameters": []
+    },
+    "/user/order": {
+      "get": {
+        "summary": "Your GET endpoint",
+        "tags": [
+          "user"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {
+                    "req.body": {
+                      "type": "object",
+                      "properties": {}
+                    },
+                    "req.body type": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -3,
+                  "massage": "Empty token in request body or request body = undefined",
+                  "debug": {
+                    "req.body": {},
+                    "req.body type": "object"
+                  }
+                }
+              }
+            }
+          },
+          "": {
+            "description": "Ответ положительный. Если есть id - ответ с одним ордером, если id нет или пуст - все ордеры",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "orders_id": {
+                    "type": "integer"
+                  },
+                  "orders_uid": {
+                    "type": "string"
+                  },
+                  "orders_price": {
+                    "type": "integer"
+                  },
+                  "orders_date": {
+                    "type": "string"
+                  },
+                  "orders_status": {
+                    "type": "integer"
+                  },
+                  "orders_title": {
+                    "type": "string"
+                  },
+                  "orders_id_ad": {
+                    "type": "integer"
+                  },
+                  "orders_action_name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": [
+                  {
+                    "orders_id": 2,
+                    "orders_uid": "77814634",
+                    "orders_price": 990,
+                    "orders_date": "2022-07-11T10:09:19.000Z",
+                    "orders_status": 0,
+                    "orders_title": "Подключение тарифа - Максимум",
+                    "orders_id_ad": 0,
+                    "orders_action_name": "services_tariff"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "operationId": "get-user-order",
+        "parameters": [
+          {
+            "type": "string",
+            "in": "header",
+            "name": "token"
+          },
+          {
+            "type": "string",
+            "in": "query",
+            "description": "Необязательный",
+            "name": "id"
+          }
+        ],
+        "description": "Получение orders"
+      },
+      "parameters": []
+    },
+    "/user/sale": {
+      "get": {
+        "summary": "Your GET endpoint",
+        "tags": [
+          "user"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {
+                    "req.body": {
+                      "type": "object",
+                      "properties": {}
+                    },
+                    "req.body type": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -3,
+                  "massage": "Empty token in request body or request body = undefined",
+                  "debug": {
+                    "req.body": {},
+                    "req.body type": "object"
+                  }
+                }
+              }
+            }
+          },
+          "": {
+            "description": "Ответ положительный. Если есть id - ответ с одним sale, если id нет или пуст - все sale",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ads_id": {
+                    "type": "integer"
+                  },
+                  "ads_title": {
+                    "type": "string"
+                  },
+                  "ads_alias": {
+                    "type": "string"
+                  },
+                  "ads_text": {
+                    "type": "string"
+                  },
+                  "ads_id_cat": {
+                    "type": "integer"
+                  },
+                  "ads_datetime_add": {
+                    "type": "string"
+                  },
+                  "ads_datetime_view": {
+                    "type": "null"
+                  },
+                  "ads_id_user": {
+                    "type": "integer"
+                  },
+                  "ads_images": {
+                    "type": "string"
+                  },
+                  "ads_price": {
+                    "type": "integer"
+                  },
+                  "ads_address": {
+                    "type": "string"
+                  },
+                  "ads_latitude": {
+                    "type": "string"
+                  },
+                  "ads_longitude": {
+                    "type": "string"
+                  },
+                  "ads_metro_ids": {
+                    "type": "string"
+                  },
+                  "ads_period_publication": {
+                    "type": "string"
+                  },
+                  "ads_city_id": {
+                    "type": "integer"
+                  },
+                  "ads_status": {
+                    "type": "integer"
+                  },
+                  "ads_region_id": {
+                    "type": "integer"
+                  },
+                  "ads_country_id": {
+                    "type": "integer"
+                  },
+                  "ads_note": {
+                    "type": "string"
+                  },
+                  "ads_count_display": {
+                    "type": "integer"
+                  },
+                  "ads_currency": {
+                    "type": "string"
+                  },
+                  "ads_period_day": {
+                    "type": "integer"
+                  },
+                  "ads_update": {
+                    "type": "null"
+                  },
+                  "ads_sorting": {
+                    "type": "integer"
+                  },
+                  "ads_auction": {
+                    "type": "integer"
+                  },
+                  "ads_auction_duration": {
+                    "type": "null"
+                  },
+                  "ads_auction_price_sell": {
+                    "type": "integer"
+                  },
+                  "ads_auction_day": {
+                    "type": "integer"
+                  },
+                  "ads_area_ids": {
+                    "type": "string"
+                  },
+                  "ads_id_import": {
+                    "type": "null"
+                  },
+                  "ads_import_images": {
+                    "type": "null"
+                  },
+                  "ads_video": {
+                    "type": "null"
+                  },
+                  "ads_vip": {
+                    "type": "integer"
+                  },
+                  "ads_auto_renewal": {
+                    "type": "integer"
+                  },
+                  "ads_online_view": {
+                    "type": "integer"
+                  },
+                  "ads_price_old": {
+                    "type": "integer"
+                  },
+                  "ads_filter_tags": {
+                    "type": "string"
+                  },
+                  "ads_price_free": {
+                    "type": "integer"
+                  },
+                  "ads_available": {
+                    "type": "integer"
+                  },
+                  "ads_available_unlimitedly": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": [
+                  {
+                    "ads_id": 1,
+                    "ads_title": "BMW X6 M Competition III (F96)",
+                    "ads_alias": "bmw-x6-m-competition-iii-f96",
+                    "ads_text": "Отличное состояние",
+                    "ads_id_cat": 27,
+                    "ads_datetime_add": "2022-07-11T10:07:09.000Z",
+                    "ads_datetime_view": null,
+                    "ads_id_user": 2,
+                    "ads_images": "[\"62cbf5d475fe8.webp\"]",
+                    "ads_price": 1500000,
+                    "ads_address": "",
+                    "ads_latitude": "0",
+                    "ads_longitude": "0",
+                    "ads_metro_ids": "",
+                    "ads_period_publication": "2022-08-10T10:06:53.000Z",
+                    "ads_city_id": 376,
+                    "ads_status": 1,
+                    "ads_region_id": 33,
+                    "ads_country_id": 1,
+                    "ads_note": "",
+                    "ads_count_display": 7,
+                    "ads_currency": "RUB",
+                    "ads_period_day": 30,
+                    "ads_update": null,
+                    "ads_sorting": 0,
+                    "ads_auction": 0,
+                    "ads_auction_duration": null,
+                    "ads_auction_price_sell": 0,
+                    "ads_auction_day": 0,
+                    "ads_area_ids": "",
+                    "ads_id_import": null,
+                    "ads_import_images": null,
+                    "ads_video": null,
+                    "ads_vip": 0,
+                    "ads_auto_renewal": 0,
+                    "ads_online_view": 1,
+                    "ads_price_old": 0,
+                    "ads_filter_tags": "Марка:BMW;Модель:X6 M;Коробка:Автомат;Тип кузова:Внедорожник;Мощность, л.с:1000;Объем, л:25;Состояние:Не битый;Руль:Левый",
+                    "ads_price_free": 0,
+                    "ads_available": 0,
+                    "ads_available_unlimitedly": 1
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "operationId": "get-user-sale",
+        "parameters": [
+          {
+            "type": "string",
+            "in": "header",
+            "name": "token"
+          },
+          {
+            "type": "string",
+            "in": "query",
+            "name": "id",
+            "description": "Необязательный"
+          }
+        ],
+        "description": "Получение sale"
+      },
+      "parameters": []
+    },
+    "/direct/country": {
+      "get": {
+        "summary": "Получение стран",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "country_id": {
+                    "type": "integer"
+                  },
+                  "country_name": {
+                    "type": "string"
+                  },
+                  "country_status": {
+                    "type": "integer"
+                  },
+                  "country_alias": {
+                    "type": "string"
+                  },
+                  "country_lat": {
+                    "type": "string"
+                  },
+                  "country_lng": {
+                    "type": "string"
+                  },
+                  "country_desc": {
+                    "type": "string"
+                  },
+                  "country_format_phone": {
+                    "type": "string"
+                  },
+                  "country_code_phone": {
+                    "type": "string"
+                  },
+                  "country_image": {
+                    "type": "string"
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": [
+                  {
+                    "country_id": 2,
+                    "country_name": "Казахстан",
+                    "country_status": 0,
+                    "country_alias": "kazahstan",
+                    "country_lat": "51.1801",
+                    "country_lng": "71.446",
+                    "country_desc": "",
+                    "country_format_phone": "+77_ ___ __ __",
+                    "country_code_phone": "KZ",
+                    "country_image": "ba4d015f4764b6ca4fcdd110fcd0e35b.png"
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {
+                    "req.body": {
+                      "type": "object",
+                      "properties": {}
+                    },
+                    "req.body type": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -3,
+                  "massage": "Empty token in request body or request body = undefined",
+                  "debug": {
+                    "req.body": {},
+                    "req.body type": "object"
+                  }
+                }
+              }
+            }
+          },
+          "": {
+            "description": "Ответ положительный. Если есть id - ответ с одним элемент, если id нет или пуст - все",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ads_id": {
+                    "type": "integer"
+                  },
+                  "ads_title": {
+                    "type": "string"
+                  },
+                  "ads_alias": {
+                    "type": "string"
+                  },
+                  "ads_text": {
+                    "type": "string"
+                  },
+                  "ads_id_cat": {
+                    "type": "integer"
+                  },
+                  "ads_datetime_add": {
+                    "type": "string"
+                  },
+                  "ads_datetime_view": {
+                    "type": "null"
+                  },
+                  "ads_id_user": {
+                    "type": "integer"
+                  },
+                  "ads_images": {
+                    "type": "string"
+                  },
+                  "ads_price": {
+                    "type": "integer"
+                  },
+                  "ads_address": {
+                    "type": "string"
+                  },
+                  "ads_latitude": {
+                    "type": "string"
+                  },
+                  "ads_longitude": {
+                    "type": "string"
+                  },
+                  "ads_metro_ids": {
+                    "type": "string"
+                  },
+                  "ads_period_publication": {
+                    "type": "string"
+                  },
+                  "ads_city_id": {
+                    "type": "integer"
+                  },
+                  "ads_status": {
+                    "type": "integer"
+                  },
+                  "ads_region_id": {
+                    "type": "integer"
+                  },
+                  "ads_country_id": {
+                    "type": "integer"
+                  },
+                  "ads_note": {
+                    "type": "string"
+                  },
+                  "ads_count_display": {
+                    "type": "integer"
+                  },
+                  "ads_currency": {
+                    "type": "string"
+                  },
+                  "ads_period_day": {
+                    "type": "integer"
+                  },
+                  "ads_update": {
+                    "type": "null"
+                  },
+                  "ads_sorting": {
+                    "type": "integer"
+                  },
+                  "ads_auction": {
+                    "type": "integer"
+                  },
+                  "ads_auction_duration": {
+                    "type": "null"
+                  },
+                  "ads_auction_price_sell": {
+                    "type": "integer"
+                  },
+                  "ads_auction_day": {
+                    "type": "integer"
+                  },
+                  "ads_area_ids": {
+                    "type": "string"
+                  },
+                  "ads_id_import": {
+                    "type": "null"
+                  },
+                  "ads_import_images": {
+                    "type": "null"
+                  },
+                  "ads_video": {
+                    "type": "null"
+                  },
+                  "ads_vip": {
+                    "type": "integer"
+                  },
+                  "ads_auto_renewal": {
+                    "type": "integer"
+                  },
+                  "ads_online_view": {
+                    "type": "integer"
+                  },
+                  "ads_price_old": {
+                    "type": "integer"
+                  },
+                  "ads_filter_tags": {
+                    "type": "string"
+                  },
+                  "ads_price_free": {
+                    "type": "integer"
+                  },
+                  "ads_available": {
+                    "type": "integer"
+                  },
+                  "ads_available_unlimitedly": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": [
+                  {
+                    "ads_id": 1,
+                    "ads_title": "BMW X6 M Competition III (F96)",
+                    "ads_alias": "bmw-x6-m-competition-iii-f96",
+                    "ads_text": "Отличное состояние",
+                    "ads_id_cat": 27,
+                    "ads_datetime_add": "2022-07-11T10:07:09.000Z",
+                    "ads_datetime_view": null,
+                    "ads_id_user": 2,
+                    "ads_images": "[\"62cbf5d475fe8.webp\"]",
+                    "ads_price": 1500000,
+                    "ads_address": "",
+                    "ads_latitude": "0",
+                    "ads_longitude": "0",
+                    "ads_metro_ids": "",
+                    "ads_period_publication": "2022-08-10T10:06:53.000Z",
+                    "ads_city_id": 376,
+                    "ads_status": 1,
+                    "ads_region_id": 33,
+                    "ads_country_id": 1,
+                    "ads_note": "",
+                    "ads_count_display": 7,
+                    "ads_currency": "RUB",
+                    "ads_period_day": 30,
+                    "ads_update": null,
+                    "ads_sorting": 0,
+                    "ads_auction": 0,
+                    "ads_auction_duration": null,
+                    "ads_auction_price_sell": 0,
+                    "ads_auction_day": 0,
+                    "ads_area_ids": "",
+                    "ads_id_import": null,
+                    "ads_import_images": null,
+                    "ads_video": null,
+                    "ads_vip": 0,
+                    "ads_auto_renewal": 0,
+                    "ads_online_view": 1,
+                    "ads_price_old": 0,
+                    "ads_filter_tags": "Марка:BMW;Модель:X6 M;Коробка:Автомат;Тип кузова:Внедорожник;Мощность, л.с:1000;Объем, л:25;Состояние:Не битый;Руль:Левый",
+                    "ads_price_free": 0,
+                    "ads_available": 0,
+                    "ads_available_unlimitedly": 1
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "operationId": "get-direct-country",
+        "parameters": [
+          {
+            "type": "string",
+            "in": "query",
+            "name": "id",
+            "description": "необязательный"
+          }
+        ],
+        "description": "Получение country",
+        "tags": [
+          "direct"
+        ]
+      },
+      "parameters": []
+    },
+    "/direct/region": {
+      "get": {
+        "summary": "Получение регионов",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "country_id": {
+                    "type": "integer"
+                  },
+                  "country_name": {
+                    "type": "string"
+                  },
+                  "country_status": {
+                    "type": "integer"
+                  },
+                  "country_alias": {
+                    "type": "string"
+                  },
+                  "country_lat": {
+                    "type": "string"
+                  },
+                  "country_lng": {
+                    "type": "string"
+                  },
+                  "country_desc": {
+                    "type": "string"
+                  },
+                  "country_format_phone": {
+                    "type": "string"
+                  },
+                  "country_code_phone": {
+                    "type": "string"
+                  },
+                  "country_image": {
+                    "type": "string"
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": [
+                  {
+                    "country_id": 2,
+                    "country_name": "Казахстан",
+                    "country_status": 0,
+                    "country_alias": "kazahstan",
+                    "country_lat": "51.1801",
+                    "country_lng": "71.446",
+                    "country_desc": "",
+                    "country_format_phone": "+77_ ___ __ __",
+                    "country_code_phone": "KZ",
+                    "country_image": "ba4d015f4764b6ca4fcdd110fcd0e35b.png"
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {
+                    "req.body": {
+                      "type": "object",
+                      "properties": {}
+                    },
+                    "req.body type": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -3,
+                  "massage": "Empty token in request body or request body = undefined",
+                  "debug": {
+                    "req.body": {},
+                    "req.body type": "object"
+                  }
+                }
+              }
+            }
+          },
+          "": {
+            "description": "Ответ положительный. Если есть id - ответ с одним элемент, если id нет или пуст - все",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "region_id": {
+                    "type": "integer"
+                  },
+                  "country_id": {
+                    "type": "integer"
+                  },
+                  "region_name": {
+                    "type": "string"
+                  },
+                  "region_alias": {
+                    "type": "string"
+                  },
+                  "region_desc": {
+                    "type": "string"
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": [
+                  {
+                    "region_id": 2,
+                    "country_id": 1,
+                    "region_name": "Алтай Республика",
+                    "region_alias": "altay-respublika",
+                    "region_desc": ""
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "operationId": "get-direct-region",
+        "parameters": [
+          {
+            "type": "string",
+            "in": "query",
+            "name": "region_id",
+            "description": "необязательный"
+          },
+          {
+            "type": "string",
+            "in": "query",
+            "name": "country_id",
+            "description": "необязательный"
+          }
+        ],
+        "description": "Получение region",
+        "tags": [
+          "direct"
+        ]
+      },
+      "parameters": []
+    },
+    "/direct/city": {
+      "get": {
+        "summary": "Получение городов",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "country_id": {
+                    "type": "integer"
+                  },
+                  "country_name": {
+                    "type": "string"
+                  },
+                  "country_status": {
+                    "type": "integer"
+                  },
+                  "country_alias": {
+                    "type": "string"
+                  },
+                  "country_lat": {
+                    "type": "string"
+                  },
+                  "country_lng": {
+                    "type": "string"
+                  },
+                  "country_desc": {
+                    "type": "string"
+                  },
+                  "country_format_phone": {
+                    "type": "string"
+                  },
+                  "country_code_phone": {
+                    "type": "string"
+                  },
+                  "country_image": {
+                    "type": "string"
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": [
+                  {
+                    "country_id": 2,
+                    "country_name": "Казахстан",
+                    "country_status": 0,
+                    "country_alias": "kazahstan",
+                    "country_lat": "51.1801",
+                    "country_lng": "71.446",
+                    "country_desc": "",
+                    "country_format_phone": "+77_ ___ __ __",
+                    "country_code_phone": "KZ",
+                    "country_image": "ba4d015f4764b6ca4fcdd110fcd0e35b.png"
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {
+                    "req.body": {
+                      "type": "object",
+                      "properties": {}
+                    },
+                    "req.body type": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -3,
+                  "massage": "Empty token in request body or request body = undefined",
+                  "debug": {
+                    "req.body": {},
+                    "req.body type": "object"
+                  }
+                }
+              }
+            }
+          },
+          "": {
+            "description": "Ответ положительный. Если есть id - ответ с одним элемент, если id нет или пуст - все",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "region_id": {
+                    "type": "integer"
+                  },
+                  "country_id": {
+                    "type": "integer"
+                  },
+                  "region_name": {
+                    "type": "string"
+                  },
+                  "region_alias": {
+                    "type": "string"
+                  },
+                  "region_desc": {
+                    "type": "string"
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": [
+                  {
+                    "region_id": 2,
+                    "country_id": 1,
+                    "region_name": "Алтай Республика",
+                    "region_alias": "altay-respublika",
+                    "region_desc": ""
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "operationId": "get-direct-city",
+        "parameters": [
+          {
+            "type": "string",
+            "in": "query",
+            "name": "country_id",
+            "description": "необязательный"
+          },
+          {
+            "type": "string",
+            "in": "query",
+            "name": "region_id",
+            "description": "необязательный"
+          },
+          {
+            "type": "string",
+            "in": "query",
+            "name": "city_id",
+            "description": "необязательный"
+          }
+        ],
+        "description": "Получение city",
+        "tags": [
+          "direct"
+        ]
+      },
+      "parameters": []
+    },
+    "/direct/metro": {
+      "get": {
+        "summary": "Получение станций метро",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "city_id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "color": {
+                    "type": "string"
+                  },
+                  "parent_id": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": [
+                  {
+                    "id": 2,
+                    "city_id": 1134,
+                    "name": "Замоскворецкая",
+                    "color": "#44b85c",
+                    "parent_id": 0
+                  }
+                ]
+              }
+            },
+            "examples": {
+              "example": [
+                {
+                  "id": 0,
+                  "city_id": 0,
+                  "name": "string",
+                  "color": "string",
+                  "parent_id": 0
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {
+                    "req.body": {
+                      "type": "object",
+                      "properties": {}
+                    },
+                    "req.body type": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -3,
+                  "massage": "Empty token in request body or request body = undefined",
+                  "debug": {
+                    "req.body": {},
+                    "req.body type": "object"
+                  }
+                }
+              }
+            }
+          },
+          "": {
+            "description": "Ответ положительный. Если есть id - ответ с одним элемент, если id нет или пуст - все",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "region_id": {
+                    "type": "integer"
+                  },
+                  "country_id": {
+                    "type": "integer"
+                  },
+                  "region_name": {
+                    "type": "string"
+                  },
+                  "region_alias": {
+                    "type": "string"
+                  },
+                  "region_desc": {
+                    "type": "string"
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": [
+                  {
+                    "region_id": 2,
+                    "country_id": 1,
+                    "region_name": "Алтай Республика",
+                    "region_alias": "altay-respublika",
+                    "region_desc": ""
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "operationId": "get-direct-metro",
+        "parameters": [
+          {
+            "type": "string",
+            "in": "query",
+            "name": "id",
+            "description": "необязательный"
+          },
+          {
+            "type": "string",
+            "in": "query",
+            "name": "city_id",
+            "description": "необязательный"
+          }
+        ],
+        "description": "Получение metro",
+        "tags": [
+          "direct"
+        ]
+      },
+      "parameters": []
+    }
+  },
+  "securityDefinitions": {
+    "api_key": {
+      "type": "apiKey",
+      "name": "auth",
+      "in": "header",
+      "description": "APi key для доступа. Используйте тестовый key - '1234567890!@#$%^&*()QWERTYUIOP'. В дальнейшем будет заменен."
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "pass": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "User"
+      }
+    },
+    "User-id": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "pass": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "User-id"
+      }
+    },
+    "User-data": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "pass": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/UserLogin"
+        }
+      },
+      "xml": {
+        "name": "User-data"
+      }
+    },
+    "UserLogin": {
+      "title": "data",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "datetime_add": {
+          "type": "string"
+        },
+        "social_identity": {
+          "type": "string"
+        },
+        "status": {
+          "type": "number"
+        },
+        "avatar": {
+          "type": "string"
+        },
+        "datetime_view": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "surname": {
+          "type": "string"
+        },
+        "balans": {
+          "type": "number"
+        },
+        "tariff": {
+          "type": "number"
+        },
+        "tariff_autorenewal": {
+          "type": "number"
+        },
+        "city": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "UserLogin"
+      }
+    },
+    "UserLoginResponse": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/UserLogin"
+      },
+      "xml": {
+        "name": "UserLoginResponse"
+      }
+    },
+    "User_reg": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "pass": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "User_reg"
+      }
+    },
+    "User_reg_params": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "pass": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "User_reg_params"
+      }
+    },
+    "AdsData": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "pass": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "AdsData"
+      }
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "debug": {
+          "type": "object"
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "api_key": []
+    }
+  ]
+}
