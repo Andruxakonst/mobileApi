@@ -1,6 +1,9 @@
 const DB = require("./DbController.js");
+const mysql = require('mysql2/promise');
 const crypto = require('crypto');
 const { send } = require("process");
+const { type } = require("express/lib/response.js");
+const res = require("express/lib/response.js");
 
 //инициализация чата. Если есть уже чат - отправляем хаш этого чата или создаем новый хэш
 exports.init = (req,res)=>{
@@ -278,78 +281,117 @@ exports.delete = (req,res)=>{
     }
 }
 
+exports.count_message = async (req,res)=>{
+    let user_id = req.body.user_id;
+    const conn = await mysql.createConnection(DB.config);
+    let all = await getMessage();
+    let allSend = all.get('total');
+    let allNotTotal = all;
+    let hash_counts = []
+    Array.from(allNotTotal, ([key, value]) => {
+        if(key != 'total'){
+            hash_counts.push(value)
+        }
+    })
+    if("hash_id" in req.body && typeof req.body.hash_id != "undefined" && req.body.hash_id != ""){
+        let active = await getMessage(req.body.hash_id)
+        if(!('status' in active && active.status =="error" && 'status' in all && all.status =="error")){
+            res.json({
+                "all":allSend,
+                "active":active.total,
+                "hash_chats":hash_counts
+            });
+        }else{
+            res.json('status' in active ? active : all)
+        }
+    }else{
+        if(!('status' in all && all.status =="error")){
+            res.json({
+                "all":allSend,
+                "active":"",
+                "hash_chats":hash_counts
+            });
+        }else{
+            res.json(all)
+        }
+    }
+        //Если hash_id отсутствует или пустой
+       
+async function getMessage(id_hash=''){
+    if(id_hash ==''){
+        let results = new Map();
+        try{
+            let groupBy = new Map();
+            let sql = `select * from uni_chat_users where chat_users_id_user=${user_id}`;
+            let [rows,fields]=await conn.execute(sql);
+            let getAll = rows;
+            if(getAll.length >0){
+                for(let user = 0; user<getAll.length; user++){
+                    if(typeof getAll[user].chat_users_id_interlocutor !='undefined' && getAll[user].chat_users_id_interlocutor !=null&& getAll[user].chat_users_id_interlocutor !=NaN){
+                        let sql = `select * from uni_clients where clients_id=${getAll[user].chat_users_id_interlocutor}`;
+                        let [rows,fields]=await conn.execute(sql);
+                        let get = rows;
+                        if(get){
+                            groupBy.set(getAll[user].chat_users_id_hash, getAll[user].chat_users_id_hash)
+                        }
+                    }else{
+                        groupBy.set(getAll[user].chat_users_id_hash, getAll[user].chat_users_id_hash)
+                    }
+                }
+                if(groupBy.size >0){
+                    let cnt = 0;
+                    for(let id_hash of groupBy.keys()){
+                        let sql = `select count(*) as total from uni_chat_messages where chat_messages_id_hash="${id_hash}" and chat_messages_status=0 and chat_messages_id_user!=${user_id}`
+                        let [rows,fields]=await conn.execute(sql);
+                        let count = rows[0];
+                        if(count.total>0){
+                            results.set(id_hash,id_hash)
+                        }
+                        cnt += count.total;
+                        results.set(`total`,cnt)
+                    }
+                }
+            }
+            return results;
+        }catch(err){
+            let resBody = {
+                "status": "error",
+                "id": -6,
+                "massage":"Error ad_id.",
+                "debug":{
+                    "sql":sql,
+                    "err":err,
+                }
+            }
+            return resBody;
+        }
+    }else{
+        let sql = `select count(*) as total from uni_chat_messages where chat_messages_id_hash="${id_hash}" and  chat_messages_status=0 and chat_messages_id_user!=${user_id}`;
+
+        try{
+            let [rows,fields]=await conn.execute(sql);
+            return rows[0];
+        }catch(err){
+            let resBody = {
+                "status": "error",
+                "id": -6,
+                "massage":"Error ad_id.",
+                "debug":{
+                    "sql":sql,
+                    "err":err,
+                }
+            }
+            return resBody;
+        }
+    }
+}
+
+}
+
 exports.send = (req,res)=>{
     res.send('In developing')
 }
 exports.user_locked = (req,res)=>{
     res.send('In developing')
 }
-exports.count_message = (req,res)=>{
-    let user_id = req.body.user_id;
-    if("hash_id" in req.body && typeof req.body.hash_id != "undefined" && req.body.hash_id != ""){
-         //проверяем запросы с хэшем
-        let id_hash = req.body.hash_id;
-        let all = [];
-        let active = [];
-        let hash_count =[];
-        all = total();
-        sendData({'all':all});
-        
-    }else{
-        //проверяем запросы без хэша
 
-    };
-
-    function total(hesh){
-        if(hesh){
-            sql = `select count(*) as total from uni_chat_messages where chat_messages_id_hash=${hesh} and chat_messages_status=0 and chat_messages_id_user!=${user_id}"`;
-            DB.connection.query(sql,(err, data)=>{
-                if(data){
-                    return data;
-                }else{
-                    let resBody = {
-                        "status": "error",
-                        "id": -6,
-                        "massage":"Error ad_id.",
-                        "debug":{
-                            "sql":sql,
-                            "err":err,
-                        }
-                    }
-                    return resBody;
-                }
-            });
-        }else{
-
-        }
-    }
-
-    function active(){
-        hashCounts();
-    };
-
-    function hashCounts(){
-        sendData()
-    };
-
-    function sendData(data){
-        res.json(data)
-    };
-}
-// sql = ``;
-// DB.connection.query(sql,(err, data)=>{
-//     if(data){
-//            res.send('OK')
-//     }else{
-//         let resBody = {
-//             "status": "error",
-//             "id": -6,
-//             "massage":"Error ad_id.",
-//             "debug":{
-//                 "sql":sql,
-//                 "err":err,
-//             }
-//         }
-//         res.status(400).json(resBody);
-//     }
-// })

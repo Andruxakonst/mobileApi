@@ -6,3 +6,11 @@ exports.connection = mysql.createConnection({
     database: "aerinee_crowdfaster",
     password: ""
 });
+
+exports.config = {
+    host: "localhost",
+    port:"",
+    user: "root",
+    database: "aerinee_crowdfaster",
+    password: ""
+};

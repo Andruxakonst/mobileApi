@@ -4,7 +4,8 @@
   "description": "API for mass send data",
   "main": "api.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon api.js"
   },
   "keywords": [
     "mass",
