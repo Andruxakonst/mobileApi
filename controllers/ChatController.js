@@ -296,22 +296,26 @@ exports.count_message = async (req,res)=>{
     if("hash_id" in req.body && typeof req.body.hash_id != "undefined" && req.body.hash_id != ""){
         let active = await getMessage(req.body.hash_id)
         if(!('status' in active && active.status =="error" && 'status' in all && all.status =="error")){
+            conn.end();
             res.json({
                 "all":allSend,
                 "active":active.total,
                 "hash_chats":hash_counts
             });
         }else{
+            conn.end();
             res.json('status' in active ? active : all)
         }
     }else{
         if(!('status' in all && all.status =="error")){
+            conn.end();
             res.json({
                 "all":allSend,
                 "active":"",
                 "hash_chats":hash_counts
             });
         }else{
+            conn.end();
             res.json(all)
         }
     }
@@ -388,10 +392,126 @@ async function getMessage(id_hash=''){
 
 }
 
+exports.user_locked = async (req,res)=>{
+    let user_id = req.body.user_id;
+    const conn = await mysql.createConnection(DB.config);
+    if("hash_id" in req.body && typeof req.body.hash_id != "undefined" && req.body.hash_id != ""){
+        try{
+            let sql = `select * from uni_chat_users where chat_users_id_hash="${req.body.hash_id}" and chat_users_id_user=${user_id}`;
+            let [rows,fields]=await conn.execute(sql);
+            let getUser = rows[0]
+            if(getUser){
+                let sql = `select * from uni_chat_locked where chat_locked_user_id = ${user_id} and chat_locked_user_id_locked = ${getUser.chat_users_id_interlocutor}`;
+                let [rows,fields]=await conn.execute(sql);
+                let getLocked = rows;
+                if(getLocked.length >0){
+                    let sql = `DELETE FROM uni_chat_locked WHERE chat_locked_id=${getLocked[0].chat_locked_id}`;
+                    let [rows,fields]=await conn.execute(sql);
+                }else{
+                    let sql = `INSERT INTO uni_chat_locked(chat_locked_user_id,chat_locked_user_id_locked)VALUES(${user_id},${getUser.chat_users_id_interlocutor})`;
+                    let [rows,fields]=await conn.execute(sql);
+                }
+            }
+            sql = `select * from uni_chat_locked where chat_locked_user_id = ${user_id} and chat_locked_user_id_locked = ${getUser.chat_users_id_interlocutor}`;
+            [rows,fields]=await conn.execute(sql);
+            let dialog = rows
+            let chat = await chatDialog(req.body.hash_id);
+            
+            //* Делаем возврат диалога
+            if(!('status' in chat)){
+                res.json({"dialog":chat});
+            }else{
+                res.status(500).json({"error":chat});
+            }
+        }catch(err){
+            let resBody = {
+                "status": "error",
+                "id": -6,
+                "massage":"Error.",
+                "debug":{
+                    "err":err,
+                }
+            }
+            conn.end();
+            res.status(500).json(resBody);
+        }
+    }else{
+        try{
+            let sql = `select count(*) as total from uni_chat_users where chat_users_id_user=${user_id} group by chat_users_id_hash`;
+            let [rows,fields]=await conn.execute(sql);
+            let get = rows[0].total;
+            if(get>0){
+                res.send('Выберите чат для общения');
+            }else{
+                res.send('У вас пока нет диалогов');
+            }
+        }catch(err){
+            let resBody = {
+                "status": "error",
+                "id": -16,
+                "massage":"Empty hash_id in respons body",
+                "debug":{
+                    "err":err,
+                }
+            }
+            res.status(500).json(resBody);
+        }
+    }
+
+    async function chatDialog(id_hash = 0){
+        try{
+            let sql = `select * from uni_chat_users where chat_users_id_hash="${id_hash}" and chat_users_id_user=${user_id}`;
+            let [rows,fields]=await conn.execute(sql);
+            let getChatUser = rows[0];
+            console.log('getChatUser',getChatUser)
+            sql = `SELECT * FROM uni_ads 
+            INNER JOIN uni_city ON uni_city.city_id = uni_ads.ads_city_id
+            INNER JOIN uni_region ON uni_region.region_id = uni_ads.ads_region_id
+            INNER JOIN uni_country ON uni_country.country_id = uni_ads.ads_country_id
+            INNER JOIN uni_category_board ON uni_category_board.category_board_id = uni_ads.ads_id_cat
+            INNER JOIN uni_clients ON uni_clients.clients_id = uni_ads.ads_id_user where ads_id=${getChatUser.chat_users_id_ad}`;
+            [rows,fields]=await conn.execute(sql);
+            let getAd = rows[0]
+            let str2hash = String(getChatUser.chat_users_id_ad)+String(getChatUser.chat_users_id_interlocutor);
+            let hash1 = crypto.createHash('md5').update(str2hash).digest('hex');
+            str2hash = String(getChatUser.chat_users_id_ad)+String(getChatUser.chat_users_id_user);
+            let hash2 = crypto.createHash('md5').update(str2hash).digest('hex');
+
+            if(id_hash == hash1 || id_hash == hash2){
+                let sql = `update uni_chat_messages set chat_messages_status=1 where chat_messages_id_hash="${id_hash}" and chat_messages_id_user!=${user_id}`;
+                let [rows,fields]=await conn.execute(sql);
+                sql = `select * from uni_chat_messages where chat_messages_id_hash="${id_hash}" order by chat_messages_date asc`;
+                [rows,fields]=await conn.execute(sql);
+                let getDialog = rows;
+                sql = `select * from uni_chat_locked WHERE chat_locked_user_id=${user_id} and chat_locked_user_id_locked=${getChatUser.chat_users_id_interlocutor}`;
+                [rows,fields]=await conn.execute(sql);
+                let getLocked = rows;
+                sql = `select * from uni_chat_locked WHERE chat_locked_user_id=${getChatUser.chat_users_id_interlocutor} and chat_locked_user_id_locked=${user_id}`;
+                [rows,fields]=await conn.execute(sql);
+                let getMyLocked = rows;
+                //*Возвращаем полученные из бд данные о чатах
+                return {
+                    "dialogs":getDialog,
+                    "locked":getLocked,
+                    "my_locked":getMyLocked
+                };
+            }
+        }catch(err){
+            let resBody = {
+                "status": "error",
+                "id": -16,
+                "massage":"Empty hash_id in respons body",
+                "debug":{
+                    "err":err,
+                }
+            }
+            return resBody;
+        }
+    }
+}
+
 exports.send = (req,res)=>{
     res.send('In developing')
 }
-exports.user_locked = (req,res)=>{
-    res.send('In developing')
-}
+
 
