@@ -1,4 +1,3 @@
-const private_hex = "6a3d8c8539b97eeb58e2e5177ca240f1";
 const fetch = require('node-fetch');
 
 exports.encrypt = async (plaintext)=>{
@@ -18,7 +17,7 @@ exports.decrypt = async (ciphertext)=>{
         headers: {'Content-Type': 'application/x-www-form-urlencoded','Content-Length':300}
     });
     return  await response.text();
-    
+
 }
 
 
