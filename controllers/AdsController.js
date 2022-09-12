@@ -2,7 +2,6 @@ const DB = require("./DbController.js");
 const User = require("./UserController");
 const Sys = require("./SystemController");
 var moment = require('moment');
-const e = require("express");
 
 exports.addAds = (req,res)=>{
     let sql='';
