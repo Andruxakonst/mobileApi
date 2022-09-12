@@ -5,88 +5,58 @@ const crypto = require('crypto');
 var moment = require('moment');
 
 //инициализация чата. Если есть уже чат - отправляем хаш этого чата или создаем новый хэш
-exports.init = (req,res)=>{
+exports.init = async (req,res)=>{
     let user_id = req.body.user_id;
+    const conn = await mysql.createConnection(DB.config);
     if("ad_id" in req.body && typeof req.body.ad_id !="undefined" && req.body.ad_id !=""){
-        let ad_id = req.body.ad_id;
-        sql = `select * from uni_ads where ads_id= ${ad_id}`;
-        DB.connection.query(sql,(err, getAd)=>{
+        try{
+            let ad_id = req.body.ad_id;
+            let sql = `select * from uni_ads where ads_id= ${ad_id}`;;
+            let [rows,fields]=await conn.execute(sql);
+            let getAd = rows[0];
             if(getAd){
-                if(getAd.length>0){
-                    getAd = getAd[0].ads_id_user;
-                    sql = `SELECT * FROM uni_clients LEFT JOIN uni_city ON uni_city.city_id = uni_clients.clients_city_id WHERE clients_id = ${getAd}`;
-                    DB.connection.query(sql,(err, interlocator)=>{
-                        if(interlocator){
-                            interlocator = interlocator[0].clients_id;
-                            sql = `SELECT * FROM uni_chat_users WHERE chat_users_id_ad=${ad_id} and chat_users_id_user=${user_id} and chat_users_id_interlocutor=${interlocator}`;
-                                DB.connection.query(sql,(err, getUserChat)=>{
-                                    if(getUserChat){
-                                        if(getUserChat.length > 0){
-                                            res.json({"hash":getUserChat[0].chat_users_id_hash,"ad_id": ad_id});
-                                        }else{
-                                            let str2hash = String(ad_id)+String(user_id);
-                                            let hash = crypto.createHash('md5').update(str2hash).digest('hex');
-                                            sql = `INSERT INTO uni_chat_users(chat_users_id_ad,chat_users_id_user,chat_users_id_hash,chat_users_id_interlocutor)VALUES(?,?,?,?)`;
-                                            let val =[ad_id, user_id, hash, interlocator];
-                                            DB.connection.query(sql, val, (err, results)=>{
-                                                if(results){
-                                                    res.json({"hash":hash,"ad_id": ad_id});
-                                                }else{
-                                                    let resBody = {
-                                                        "status": "error",
-                                                        "id": -6,
-                                                        "massage":"Error get data from DB.",
-                                                        "debug":{
-                                                            "sql":sql,
-                                                            "error DB":err,
-                                                        }
-                                                    }
-                                                    res.status(400).json(resBody);
-                                                }
-                                            });
-                                        }
-                                    }else{
-                                        let resBody = {
-                                            "status": "error",
-                                            "id": -6,
-                                            "massage":"Error get data from DB.",
-                                            "debug":{
-                                                "sql":sql,
-                                                "error DB":err,
-                                            }
-                                        }
-                                        res.status(400).json(resBody);
-                                    }
-                                })
+                let sql = `SELECT * FROM uni_clients LEFT JOIN uni_city ON uni_city.city_id = uni_clients.clients_city_id  where clients_id=${getAd.ads_id_user}`;
+                let [rows,fields]=await conn.execute(sql);
+                let interlocutor = rows[0];
+                if(interlocutor){
+                    let sql = `SELECT * FROM uni_ads WHERE ads_id=${ad_id} and (ads_id_user=${user_id} or ads_id_user=${interlocutor.clients_id})`;
+                    let [rows,fields]=await conn.execute(sql);
+                    if(rows[0]){
+                        sql = `SELECT * FROM uni_chat_users WHERE chat_users_id_ad=${ad_id} and chat_users_id_user=${user_id} and chat_users_id_interlocutor=${interlocutor.clients_id}`;
+                        [rows,fields]=await conn.execute(sql);
+                        let getUserChat = rows[0];
+                        if(!getUserChat){
+                            let str2hash = String(ad_id)+String(user_id);
+                            let id_hash = crypto.createHash('md5').update(str2hash).digest('hex');
+                            sql = `INSERT INTO uni_chat_users(chat_users_id_ad,chat_users_id_user,chat_users_id_hash,chat_users_id_interlocutor)VALUES(${id_ad},${user_id},"${id_hash}",${interlocutor.clients_id})`;
+                            [rows,fields]=await conn.execute(sql);
                         }else{
-                            let resBody = {
-                                "status": "error",
-                                "id": -6,
-                                "massage":"Error get data from DB.",
-                                "debug":{
-                                    "sql":sql,
-                                    "error DB":err,
-                                }
-                            }
-                            res.status(400).json(resBody);
-                        };
-                    })
-                }else{
-                    res.json(getAd)
-                }
-            }else{
-                let resBody = {
-                    "status": "error",
-                    "id": -6,
-                    "massage":"Error get data from DB.",
-                    "debug":{
-                        "sql":sql,
-                        "error DB":err,
+                            var id_hash = getUserChat.chat_users_id_hash
+                        }
                     }
                 }
-                res.status(400).json(resBody);
-            }})
+            }
+            //*Отдаем данные чаата из функции await chatUsers(id_hash)
+            let getChatUser = await chatUsers(id_hash);
+            if(!("status" in getChatUser)){
+                res.json(getChatUser)
+            }else{
+                res.status(500).json(getChatUser);
+            }
+        }catch(err){
+            console.log('error',err)
+            let resBody = {
+                "status": "error",
+                "id": -16,
+                "massage":"Error",
+                "debug":{
+                    "err":err,
+                }
+            }
+            res.status(500).json(resBody);
+        }
     }else{
+
         let resBody = {
             "status": "error",
             "id": -17,
@@ -97,6 +67,172 @@ exports.init = (req,res)=>{
         }
         res.status(400).json(resBody);
     }
+    async function chatUsers(id_hash){
+        try{
+            let listUsers = new Map;
+            let sql =`select * from uni_chat_users where chat_users_id_user=${user_id} order by chat_users_id desc`;
+            let [rows,fields]=await conn.execute(sql);
+            let get = rows;
+            if(get.length>0){
+                for(let i=0; i<get.length; i++){
+                    listUsers.set(get[i].chat_users_id_hash,get[i]);
+                }
+            }
+            let msgMap = new Map;
+            if(listUsers.size>0){
+                for (let hash of listUsers){
+                    sql = `SELECT * FROM uni_ads
+                    INNER JOIN uni_city ON uni_city.city_id = uni_ads.ads_city_id
+                    INNER JOIN uni_region ON uni_region.region_id = uni_ads.ads_region_id
+                    INNER JOIN uni_country ON uni_country.country_id = uni_ads.ads_country_id
+                    INNER JOIN uni_category_board ON uni_category_board.category_board_id =uni_ads.ads_id_cat
+                    INNER JOIN uni_clients ON uni_clients.clients_id = uni_ads.ads_id_user where ads_id="${hash[1].chat_users_id_ad}"`;
+                    [rows,fields]=await conn.execute(sql);
+                    if(rows[0]){
+                        sql = `select * from uni_chat_messages where chat_messages_id_hash="${hash[1].chat_users_id_hash}" order by chat_messages_date desc`;
+                        [rows,fields]=await conn.execute(sql);
+                        let getMsg = rows[0];
+                        let getMsgText = await fn.decrypt(getMsg.chat_messages_text)
+                        msgMap.set(hash[0], {
+                            "hash":hash[0],
+                            "messages_id":getMsg.chat_messages_id,
+                            "date":getMsg.chat_messages_date,
+                            "I_am":getMsg.chat_messages_id_user == hash[1].chat_users_id_user ? true : false,
+                            "action":getAction(getMsg.chat_messages_action),
+                            "id_user":getMsg.chat_messages_id_user,
+                            "notification":getMsg.chat_messages_notification,
+                            "id_responder":getMsg.chat_messages_id_responder,
+                            "text":getMsgText
+                        })
+                    }
+                }
+                function getAction(action){
+                    let text = '';
+                    switch (action) {
+                        case 1:
+                            text = 'Покупатель добавил объявление в избранное'
+                            break;
+                        case 2:
+                            text = 'Ваш номер просмотрели'
+                            break;
+                        case 3:
+                            text = 'Оформление заказа'
+                            break;
+                        case 4:
+                            text = 'У вас новый отзыв'
+                            break;
+                        case 5:
+                            text = 'Вы победили в аукционе'
+                            break;
+                        case 6:
+                            text = 'Ваша ставка перебита'
+                            break;
+                        default:
+                            text = 'Сообщение'
+                            break;
+                    }
+                    return text;
+                }
+            }
+            conn.end();
+            return Array.from(msgMap.values());
+
+        }catch(err){
+            console.log('error',err)
+            let resBody = {
+                "status": "error",
+                "id": -16,
+                "massage":"Error",
+                "debug":{
+                    "err":err,
+                }
+            }
+            res.status(500).json(resBody);
+        }
+    }
+///////////////////////////////////////////////////////////////
+    //     }
+    //     DB.connection.query(sql,(err, getAd)=>{
+    //         if(getAd){
+    //             if(getAd.length>0){
+    //                 getAd = getAd[0].ads_id_user;
+    //                 sql = `SELECT * FROM uni_clients LEFT JOIN uni_city ON uni_city.city_id = uni_clients.clients_city_id WHERE clients_id = ${getAd}`;
+    //                 DB.connection.query(sql,(err, interlocator)=>{
+    //                     if(interlocator){
+    //                         interlocator = interlocator[0].clients_id;
+    //                         sql = `SELECT * FROM uni_chat_users WHERE chat_users_id_ad=${ad_id} and chat_users_id_user=${user_id} and chat_users_id_interlocutor=${interlocator}`;
+    //                             DB.connection.query(sql,(err, getUserChat)=>{
+    //                                 if(getUserChat){
+    //                                     if(getUserChat.length > 0){
+    //                                         res.json({"hash":getUserChat[0].chat_users_id_hash,"ad_id": ad_id});
+    //                                     }else{
+    //                                         let str2hash = String(ad_id)+String(user_id);
+    //                                         let hash = crypto.createHash('md5').update(str2hash).digest('hex');
+    //                                         sql = `INSERT INTO uni_chat_users(chat_users_id_ad,chat_users_id_user,chat_users_id_hash,chat_users_id_interlocutor)VALUES(?,?,?,?)`;
+    //                                         let val =[ad_id, user_id, hash, interlocator];
+    //                                         DB.connection.query(sql, val, async (err, results)=>{
+    //                                             if(results){
+    //                                                 //*получение сообщений
+    //                                                 let sql = `select * from uni_chat_users where chat_users_id_user=${user_id} order by chat_users_id desc`;
+    //                                                 let [rows,fields]=await conn.execute(sql);
+                                                    
+    //                                                 res.json({"hash":hash,"ad_id": ad_id});
+    //                                             }else{
+    //                                                 let resBody = {
+    //                                                     "status": "error",
+    //                                                     "id": -6,
+    //                                                     "massage":"Error get data from DB.",
+    //                                                     "debug":{
+    //                                                         "sql":sql,
+    //                                                         "error DB":err,
+    //                                                     }
+    //                                                 }
+    //                                                 res.status(400).json(resBody);
+    //                                             }
+    //                                         });
+    //                                     }
+    //                                 }else{
+    //                                     let resBody = {
+    //                                         "status": "error",
+    //                                         "id": -6,
+    //                                         "massage":"Error get data from DB.",
+    //                                         "debug":{
+    //                                             "sql":sql,
+    //                                             "error DB":err,
+    //                                         }
+    //                                     }
+    //                                     res.status(400).json(resBody);
+    //                                 }
+    //                             })
+    //                     }else{
+    //                         let resBody = {
+    //                             "status": "error",
+    //                             "id": -6,
+    //                             "massage":"Error get data from DB.",
+    //                             "debug":{
+    //                                 "sql":sql,
+    //                                 "error DB":err,
+    //                             }
+    //                         }
+    //                         res.status(400).json(resBody);
+    //                     };
+    //                 })
+    //             }else{
+    //                 res.json(getAd)
+    //             }
+    //         }else{
+    //             let resBody = {
+    //                 "status": "error",
+    //                 "id": -6,
+    //                 "massage":"Error get data from DB.",
+    //                 "debug":{
+    //                     "sql":sql,
+    //                     "error DB":err,
+    //                 }
+    //             }
+    //             res.status(400).json(resBody);
+    //         }})
+    // }
 }
 
 //загрузка чата по его хэшу
@@ -127,7 +263,7 @@ exports.load = (req,res)=>{
                                 DB.connection.query(sql,(err, update)=>{
                                     if(update){
 
-                                        sql = `select * from uni_chat_messages where chat_messages_id_hash='${hash_id}' order by chat_messages_date asc`;
+                                        sql = `select chat_messages_id_hash from uni_chat_messages where chat_messages_id_hash='${hash_id}' order by chat_messages_date asc`;
                                             DB.connection.query(sql,(err, getDialog)=>{
                                                 if(getDialog){
                                                     sql = `select * from uni_chat_locked where chat_locked_user_id=${user_id} and chat_locked_user_id_locked=${getChatUser.chat_users_id_interlocutor}`;
