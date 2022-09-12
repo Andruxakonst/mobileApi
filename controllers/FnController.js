@@ -17,11 +17,4 @@ exports.decrypt = async (ciphertext)=>{
         headers: {'Content-Type': 'application/x-www-form-urlencoded','Content-Length':300}
     });
     return  await response.text();
-
 }
-
-
-
-
-
-
