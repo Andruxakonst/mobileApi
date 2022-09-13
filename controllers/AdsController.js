@@ -1,9 +1,13 @@
 const DB = require("./DbController.js");
-const User = require("./UserController");
-const Sys = require("./SystemController");
+const mysql = require('mysql2/promise');
 var moment = require('moment');
 
-exports.addAds = (req,res)=>{
+exports.create = (req,res)=>{
+  //Добавление одного объявления
+
+}
+exports.addvip = (req,res)=>{
+  //Добавление объявлений для Vip массово
     let sql='';
     if('ads_data' in req.body && Array.isArray(req.body.ads_data)&& req.body.ads_data.length>0){
       let results = req.body.results;
@@ -11,7 +15,6 @@ exports.addAds = (req,res)=>{
       let arr_res = [];
       console.log(results);
         if(results.tarif >=3 && results.status !=0){
-    
           sql = `
             SELECT 
               clients_shops_title AS shop
@@ -115,6 +118,7 @@ exports.addAds = (req,res)=>{
     };
 };
 exports.list = (req,res)=>{
+  let url = 'https://crowdfaster.com/media/images_boards/big/';
     let id='';
     if(req.body && 'id' in req.body && req.body.id != ''){
         id = `AND ads_id = ${req.body.id}`;
@@ -166,6 +170,15 @@ exports.list = (req,res)=>{
     if(err){
       res.status(404).send(`Не удалось получить данные из базы.`);
     }else{
+      
+      for(let ads = 0; ads<results.length; ads++){
+        let images = JSON.parse(results[ads].ads_images);
+        for(let img = 0; img<images.length; img++){
+          images[img] = url+images[img];
+        }
+        results[ads].ads_images = JSON.stringify(images);
+      }
+      console.log(results[0])
       res.json(results);
     }
   });
@@ -220,29 +233,67 @@ exports.categorie = (req,res)=>{
   }
 };
 
-exports.categories = (req,res)=>{
-  let sql = `
-    SELECT 
-    category_board_id,
-    category_board_name,
-    category_board_title,
-    category_board_text,
-    category_board_image,
-    category_board_description,
-    category_board_alias,
-    category_board_h1 
+exports.categories = async (req,res)=>{
+  const conn = await mysql.createConnection(DB.config);
+  try{
+    let sql = `SELECT 
+    category_board_id as id,
+    category_board_name as name,
+    category_board_title as title,
+    category_board_id_position as position,
+    category_board_text as text,
+    category_board_id_parent as id_parent,
+    category_board_image as image,
+    category_board_description as description,
+    category_board_alias as alias,
+    category_board_count_view as count_view,
+    category_board_date_view as date_view,
+    category_board_price as price,
+    category_board_count_free as count_free,
+    category_board_status_paid as status_paid,
+    category_board_display_price as display_price,
+    category_board_auction as auction,
+    category_board_secure as secure,
+    category_board_h1 as h1,
+    category_board_marketplace as marketplace,
+    category_board_online_view as online_view
     FROM uni_category_board 
     WHERE category_board_visible = 1
-    ORDER BY category_board_id ASC
-  `;
-  DB.connection.query(sql,
-  (err, results)=>{
-    if(err){
-      res.status(404).send(`Не удалось получить данные из базы.`);
-    }else{
-      res.json(results);
+    ORDER BY category_board_id ASC`;
+
+    let [rows,fields]= await conn.execute(sql);
+    let resObj = {categorie : []};
+    for(let cat = 0; cat<rows.length; cat++){
+      rows[cat].child = [];
+      let parrentCat = rows[cat].id_parent;
+      if(parrentCat == 0){
+        resObj.categorie.push(rows[cat])
+      }
     }
-  });
+    for(let cat = 0; cat<rows.length; cat++){
+      let parrentCat = rows[cat].id_parent;
+      if(parrentCat > 0){
+        for(let catPar = 0; catPar<rows.length; catPar++){
+          if(rows[catPar].id == parrentCat){
+            rows[catPar].child.push(rows[cat])
+          }
+        }
+      }
+    }
+
+    res.json(resObj);
+  }catch(err){
+    console.log('error',err)
+    let resBody = {
+        "status": "error",
+        "id": -16,
+        "massage":"Error",
+        "debug":{
+            "err":err,
+        }
+    }
+    res.status(500).json(resBody);
+  };
 };
 
 exports.vip = (req,res)=>{
