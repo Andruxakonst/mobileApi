@@ -150,89 +150,6 @@ exports.init = async (req,res)=>{
             res.status(500).json(resBody);
         }
     }
-///////////////////////////////////////////////////////////////
-    //     }
-    //     DB.connection.query(sql,(err, getAd)=>{
-    //         if(getAd){
-    //             if(getAd.length>0){
-    //                 getAd = getAd[0].ads_id_user;
-    //                 sql = `SELECT * FROM uni_clients LEFT JOIN uni_city ON uni_city.city_id = uni_clients.clients_city_id WHERE clients_id = ${getAd}`;
-    //                 DB.connection.query(sql,(err, interlocator)=>{
-    //                     if(interlocator){
-    //                         interlocator = interlocator[0].clients_id;
-    //                         sql = `SELECT * FROM uni_chat_users WHERE chat_users_id_ad=${ad_id} and chat_users_id_user=${user_id} and chat_users_id_interlocutor=${interlocator}`;
-    //                             DB.connection.query(sql,(err, getUserChat)=>{
-    //                                 if(getUserChat){
-    //                                     if(getUserChat.length > 0){
-    //                                         res.json({"hash":getUserChat[0].chat_users_id_hash,"ad_id": ad_id});
-    //                                     }else{
-    //                                         let str2hash = String(ad_id)+String(user_id);
-    //                                         let hash = crypto.createHash('md5').update(str2hash).digest('hex');
-    //                                         sql = `INSERT INTO uni_chat_users(chat_users_id_ad,chat_users_id_user,chat_users_id_hash,chat_users_id_interlocutor)VALUES(?,?,?,?)`;
-    //                                         let val =[ad_id, user_id, hash, interlocator];
-    //                                         DB.connection.query(sql, val, async (err, results)=>{
-    //                                             if(results){
-    //                                                 //*получение сообщений
-    //                                                 let sql = `select * from uni_chat_users where chat_users_id_user=${user_id} order by chat_users_id desc`;
-    //                                                 let [rows,fields]=await conn.execute(sql);
-                                                    
-    //                                                 res.json({"hash":hash,"ad_id": ad_id});
-    //                                             }else{
-    //                                                 let resBody = {
-    //                                                     "status": "error",
-    //                                                     "id": -6,
-    //                                                     "massage":"Error get data from DB.",
-    //                                                     "debug":{
-    //                                                         "sql":sql,
-    //                                                         "error DB":err,
-    //                                                     }
-    //                                                 }
-    //                                                 res.status(400).json(resBody);
-    //                                             }
-    //                                         });
-    //                                     }
-    //                                 }else{
-    //                                     let resBody = {
-    //                                         "status": "error",
-    //                                         "id": -6,
-    //                                         "massage":"Error get data from DB.",
-    //                                         "debug":{
-    //                                             "sql":sql,
-    //                                             "error DB":err,
-    //                                         }
-    //                                     }
-    //                                     res.status(400).json(resBody);
-    //                                 }
-    //                             })
-    //                     }else{
-    //                         let resBody = {
-    //                             "status": "error",
-    //                             "id": -6,
-    //                             "massage":"Error get data from DB.",
-    //                             "debug":{
-    //                                 "sql":sql,
-    //                                 "error DB":err,
-    //                             }
-    //                         }
-    //                         res.status(400).json(resBody);
-    //                     };
-    //                 })
-    //             }else{
-    //                 res.json(getAd)
-    //             }
-    //         }else{
-    //             let resBody = {
-    //                 "status": "error",
-    //                 "id": -6,
-    //                 "massage":"Error get data from DB.",
-    //                 "debug":{
-    //                     "sql":sql,
-    //                     "error DB":err,
-    //                 }
-    //             }
-    //             res.status(400).json(resBody);
-    //         }})
-    // }
 }
 
 //загрузка чата по его хэшу
@@ -689,16 +606,16 @@ exports.send = async (req,res)=>{
         }
     }catch(err){
         console.log('error',err)
-            let resBody = {
-                "status": "error",
-                "id": -16,
-                "massage":"Error",
-                "debug":{
-                    "err":err,
-                }
+        let resBody = {
+            "status": "error",
+            "id": -16,
+            "massage":"Error",
+            "debug":{
+                "err":err,
             }
-            res.status(500).json(resBody);
         }
+        res.status(500).json(resBody);
+    }
     
     async function chatDialog(id_hash = 0){
         try{

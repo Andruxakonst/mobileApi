@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const crypto = require('crypto');
 const moment = require("moment");
 const User = require("./User");
+const { fn } = require("moment");
 
 exports.reg = (req, res) => {
   let sql = `
@@ -432,9 +433,12 @@ exports.favorite = async (req, res) => {
   }
 }
 exports.add_review = async (req, res) =>{
-  if('id_ad' in req.body && req.body.id_ad && 'id_user' in req.body && req.body.id_user){
+  if('stars' in req.body && req.body.stars &&'text' in req.body && req.body.text &&'id_ad' in req.body && req.body.id_ad && 'id_user' in req.body && req.body.id_user){
     try{
+      let user = new User();
       const conn = await mysql.createConnection(DB.config);
+      let text = req.body.text;
+      let stars = req.body.stars;
       let id_ad = req.body.id_ad;
       const user_id = req.body.user_id;
       const id_user = req.body.id_user;
@@ -443,16 +447,29 @@ exports.add_review = async (req, res) =>{
       let [rows,fields]= await conn.execute(sql);
       let getAd = rows[0];
       if(getAd){
-        let sql = `select * from uni_clients_reviews where clients_reviews_from_id_user=${user_id} and clients_reviews_id_user=${id_userin}`;
+        let sql = `select * from uni_clients_reviews where clients_reviews_from_id_user=${user_id} and clients_reviews_id_user=${id_user}`;
         let [rows,fields]= await conn.execute(sql);
         let status_publication_review = rows[0];
         if(!status_publication_review){
-          let sql = `INSERT INTO uni_clients_reviews(clients_reviews_id_user,clients_reviews_text,clients_reviews_from_id_user,clients_reviews_rating,clients_reviews_id_ad,clients_reviews_status_result,clients_reviews_files,clients_reviews_date)VALUES(?,?,?,?,?,?,?,?)`;
+          let sql = `INSERT INTO uni_clients_reviews(
+            clients_reviews_id_user,
+            clients_reviews_text,
+            clients_reviews_from_id_user,
+            clients_reviews_rating,
+            clients_reviews_id_ad,
+            clients_reviews_status_result,
+            clients_reviews_date)
+            VALUES(${id_user},"${text}",${user_id},${stars},${id_ad},${status_result},"${moment().format("YYYY-MM-DD HH:mm:ss")}")`;
           let [rows,fields]= await conn.execute(sql);
+          await user.sendChatAction(id_ad, 4, user_id, id_user);
+          conn.end();
+          res.send("Отзыв добавлен.");
         }else{
+          conn.end();
           res.send("Вы уже оставляли отзыв для данного товара!");
         }
       }else{
+        conn.end();
         res.send("товар не найден");
       }
       
@@ -471,18 +488,20 @@ exports.add_review = async (req, res) =>{
     let resBody = {
       status: "error",
       id: -17,
-      massage: "Empty id_ad or id_userin body request.",
+      massage: "Empty id_ad,id_user,stars, or text in body request.",
       debug: {
         "id_ad": req.body.id_ad,
         "type id_ad": typeof req.body.id_ad,
-        "id_userin": req.body.id_userin,
-        "type id_userin": typeof req.body.id_userin
+        "id_user": req.body.id_user,
+        "type id_user": typeof req.body.id_user,
+        "stars": req.body.stars,
+        "type stars": typeof req.body.stars,
+        "text": req.body.text,
+        "type text": typeof req.body.text
       },
     };
-  conn.end();
-  res.status(400).json(resBody);
-}
-  res.send("add_review")
+    res.status(400).json(resBody);
+  }
 }
 
 exports.del_review = (req, res) =>{
