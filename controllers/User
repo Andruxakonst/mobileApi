@@ -1,0 +1,49 @@
+const fn = require("./FnController.js");
+const mysql = require('mysql2/promise');
+var moment = require('moment');
+class User {
+    async getUserLocked(user_to = 0,user_from = 0){
+        try{
+            const conn = await mysql.createConnection(DB.config);
+            let sql = `select * from uni_chat_locked WHERE chat_locked_user_id=${user_to} and chat_locked_user_id_locked=${user_from}`;
+            let [rows,fields]=await conn.execute(sql);
+            conn.end();
+            return rows[0] ? true : false;
+        }catch(err){
+            let resBody = {
+                "status": "error",
+                "id": -16,
+                "massage":"Empty hash_id in respons body",
+                "debug":{
+                    "err":err,
+                }
+            }
+            return resBody;
+        }
+    }
+
+    async sendChatAction(user_to = 0,user_from = 0){
+        try{
+            const conn = await mysql.createConnection(DB.config);
+            insert("INSERT INTO uni_chat_users(chat_users_id_ad,chat_users_id_user,chat_users_id_hash,chat_users_id_interlocutor,chat_users_id_responder)VALUES(?,?,?,?,?)", array(intval($param["id_ad"]),$param["user_to"], $param["id_hash"], $param["user_from"], intval($param["id_responder"])));
+            insert("INSERT INTO uni_chat_messages(chat_messages_text,chat_messages_date,chat_messages_id_hash,chat_messages_id_user,chat_messages_action,chat_messages_attach,chat_messages_id_responder)VALUES(?,?,?,?,?,?,?)", array($encrypt_text, date("Y-m-d H:i:s"),$param["id_hash"],$param["user_from"],intval($param["action"]),json_encode($attach),intval($param["id_responder"])));
+
+            let sql = `select * from uni_chat_locked WHERE chat_locked_user_id=${user_to} and chat_locked_user_id_locked=${user_from}`;
+            let [rows,fields]=await conn.execute(sql);
+            conn.end();
+            return rows[0] ? true : false;
+        }catch(err){
+            let resBody = {
+                "status": "error",
+                "id": -16,
+                "massage":"Empty hash_id in respons body",
+                "debug":{
+                    "err":err,
+                }
+            }
+            return resBody;
+        }
+    }
+}
+
+module.exports = User;

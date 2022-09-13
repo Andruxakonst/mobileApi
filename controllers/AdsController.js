@@ -13,7 +13,6 @@ exports.addvip = (req,res)=>{
       let results = req.body.results;
       let user_id = results.id;
       let arr_res = [];
-      console.log(results);
         if(results.tarif >=3 && results.status !=0){
           sql = `
             SELECT 
@@ -178,7 +177,7 @@ exports.list = (req,res)=>{
         }
         results[ads].ads_images = JSON.stringify(images);
       }
-      console.log(results[0])
+
       res.json(results);
     }
   });
@@ -187,18 +186,30 @@ exports.list = (req,res)=>{
 exports.categorie = (req,res)=>{
   if(req.query && 'id' in req.query && req.query.id != ''){
     let sql = `
-      SELECT 
-      category_board_id,
-      category_board_name,
-      category_board_title,
-      category_board_text,
-      category_board_image,
-      category_board_description,
-      category_board_alias,
-      category_board_h1 
-      FROM uni_category_board 
-      WHERE
-      category_board_visible = 1 AND category_board_id = ${req.query.id};
+    SELECT 
+    category_board_id as id,
+    category_board_name as name,
+    category_board_title as title,
+    category_board_id_position as position,
+    category_board_text as text,
+    category_board_id_parent as id_parent,
+    category_board_image as image,
+    category_board_description as description,
+    category_board_alias as alias,
+    category_board_count_view as count_view,
+    category_board_date_view as date_view,
+    category_board_price as price,
+    category_board_count_free as count_free,
+    category_board_status_paid as status_paid,
+    category_board_display_price as display_price,
+    category_board_auction as auction,
+    category_board_secure as secure,
+    category_board_h1 as h1,
+    category_board_marketplace as marketplace,
+    category_board_online_view as online_view
+    FROM uni_category_board 
+    WHERE
+    category_board_visible = 1 AND category_board_id = ${req.query.id};
     `;
     DB.connection.query(sql,
       (err, results)=>{
@@ -234,6 +245,7 @@ exports.categorie = (req,res)=>{
 };
 
 exports.categories = async (req,res)=>{
+  let url = 'https://crowdfaster.com/media/images_boards/big/';
   const conn = await mysql.createConnection(DB.config);
   try{
     let sql = `SELECT 
@@ -243,7 +255,7 @@ exports.categories = async (req,res)=>{
     category_board_id_position as position,
     category_board_text as text,
     category_board_id_parent as id_parent,
-    category_board_image as image,
+    category_board_image as images,
     category_board_description as description,
     category_board_alias as alias,
     category_board_count_view as count_view,
@@ -263,8 +275,10 @@ exports.categories = async (req,res)=>{
 
     let [rows,fields]= await conn.execute(sql);
     let resObj = {categorie : []};
+
     for(let cat = 0; cat<rows.length; cat++){
       rows[cat].child = [];
+      rows[cat].images = url+rows[cat].images;
       let parrentCat = rows[cat].id_parent;
       if(parrentCat == 0){
         resObj.categorie.push(rows[cat])
@@ -280,7 +294,7 @@ exports.categories = async (req,res)=>{
         }
       }
     }
-
+    conn.end()
     res.json(resObj);
   }catch(err){
     console.log('error',err)
@@ -292,6 +306,7 @@ exports.categories = async (req,res)=>{
             "err":err,
         }
     }
+    conn.end()
     res.status(500).json(resBody);
   };
 };

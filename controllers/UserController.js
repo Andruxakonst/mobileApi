@@ -1,7 +1,9 @@
 const DB = require("./DbController.js");
+const mysql = require('mysql2/promise');
 const bcrypt = require("bcrypt");
 const crypto = require('crypto');
 const moment = require("moment");
+const User = require("./User");
 
 exports.reg = (req, res) => {
   let sql = `
@@ -9,7 +11,8 @@ exports.reg = (req, res) => {
         clients_id AS id,
         clients_email AS email,
         clients_status AS status,
-        clients_phone AS phone
+        clients_phone AS phone,
+        clients_lang AS lang
     FROM
         uni_clients
     WHERE clients_email = "${req.body.email}"`;
@@ -25,7 +28,6 @@ exports.reg = (req, res) => {
             function (err, pass_hash) {
               pass_hash = pass_hash.replace(/^\$2b(.+)$/i, "$2y$1");
               user_hash = crypto.createHash('md5').update(req.body.email).digest("hex");
-              console.log('user_hash',user_hash)
               let val = [
                 pass_hash,
                 req.body.email,
@@ -39,7 +41,8 @@ exports.reg = (req, res) => {
                 1,
                 1,
                 0,
-                user_hash
+                user_hash,
+                req.body.leng,
               ];
               sql = `
                 INSERT INTO uni_clients(
@@ -55,9 +58,10 @@ exports.reg = (req, res) => {
                     clients_secure,
                     clients_view_phone,
                     clients_tariff_id,
-                    clients_id_hash
+                    clients_id_hash,
+                    clients_lang
                 )
-                VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)
+                VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 `;
 
               DB.connection.query(sql, val, (err, results) => {
@@ -70,7 +74,7 @@ exports.reg = (req, res) => {
                   results.token = token.slice(1) + token[0];
                   res.json({ results });
                 } else {
-                  res.status(400).json(err);
+                  res.status(500).json(err);
                   console.log("ERROR", err);
                 }
               });
@@ -149,6 +153,7 @@ exports.user_balance = async (req, res) => {
     }
   });
 };
+
 exports.user_get = (req, res) => {
   if ((req.body.phone || req.body.email) && req.body.pass) {
     let sql1 = `
@@ -157,7 +162,8 @@ exports.user_get = (req, res) => {
             clients_pass AS pass,
             clients_email AS email,
             clients_tariff_id AS tarif,
-            clients_status AS status 
+            clients_status AS status,
+            clients_lang AS lang 
             FROM 
             uni_clients 
             WHERE `;
@@ -178,28 +184,30 @@ exports.user_get = (req, res) => {
             if (res_hash) {
               if (results[0].status > 0) {
                 let sql = `
-                                        SELECT 
-                                        clients_id AS id,
-                                        cl.clients_datetime_add AS datetime_add,
-                                        cl.clients_social_identity AS social_identity,
-                                        cl.clients_status AS status,
-                                        clients_avatar AS avatar,
-                                        cl.clients_datetime_view AS datetime_view,
-                                        cl.clients_name AS name,
-                                        cl.clients_surname AS surname,
-                                        cl.clients_balance AS balans,
-                                        cl.clients_tariff_id AS tariff,
-                                        cl.clients_tariff_autorenewal AS tariff_autorenewal,
-                                        city.city_name AS city FROM uni_clients cl,
-                                        uni_city city 
-                                        WHERE `;
+                    SELECT 
+                    clients_id AS id,
+                    cl.clients_datetime_add AS datetime_add,
+                    cl.clients_social_identity AS social_identity,
+                    cl.clients_status AS status,
+                    clients_avatar AS avatar,
+                    cl.clients_datetime_view AS datetime_view,
+                    cl.clients_name AS name,
+                    cl.clients_surname AS surname,
+                    cl.clients_balance AS balans,
+                    cl.clients_tariff_id AS tariff,
+                    cl.clients_tariff_autorenewal AS tariff_autorenewal,
+                    cl.clients_lang AS lang,
+                    city.city_name AS city 
+                    FROM 
+                    uni_clients cl,
+                    uni_city city 
+                    WHERE `;
                 if (req.body.phone) {
                   sql += `clients_phone = "${req.body.phone}"`;
                 } else {
                   sql += `clients_email = "${req.body.email}"`;
                 }
                 sql += ` AND cl.clients_city_id = city.city_id`;
-
                 DB.connection.query(sql, (err, results) => {
                   if (err) {
                     res
@@ -260,7 +268,7 @@ exports.user_get = (req, res) => {
           massage: "Failed to retrieve user data from database.",
           debug: {
             DB_err: err,
-            SQL: sql,
+            SQL: 'sql',
           },
         };
         res.status(400).json(resBody);
@@ -367,3 +375,130 @@ exports.sale = (req, res) => {
     }
   });
 };
+exports.favorite = async (req, res) => {
+  try{
+    const conn = await mysql.createConnection(DB.config);
+    const user_id = req.body.user_id
+    if('id_ad' in req.body && req.body.id_ad){
+      let id_ad = req.body.id_ad;
+      let sql = `select * from uni_ads where ads_id =${id_ad}`;
+      let [rows,fields]= await conn.execute(sql);
+      let findAd = rows[0];
+
+      if(findAd){
+        let sql = `select * from uni_favorites where favorites_id_ad=${id_ad} and favorites_from_id_user=${user_id}`;
+        let [rows,fields]= await conn.execute(sql);
+        let find = rows[0];
+        if(find){
+          let sql = `DELETE FROM uni_favorites WHERE favorites_id=${find.favorites_id}`;
+          let [rows,fields]= await conn.execute(sql);
+          await stat(id_ad,user_id,findAd.ads_id_user, "favorite");
+          res.send('Delete from favorite');
+        }else{
+          let sql = `INSERT INTO uni_favorites(
+          favorites_id_ad,
+          favorites_from_id_user,
+          favorites_to_id_user,
+          favorites_date)
+          VALUES(${id_ad},${user_id},${findAd.ads_id_user},"${moment().format("YYYY-MM-DD HH:mm:ss")}")`;
+          let [rows,fields]= await conn.execute(sql);
+          conn.end();
+          res.send('Added from favorite');
+        }
+      }
+    }else{
+      let resBody = {
+        status: "error",
+        id: -17,
+        massage: "Empty id_ad in body request.",
+        debug: {
+          id_ad: req.body.id_ad,
+          "type": typeof req.body.id_ad
+        },
+      };
+      conn.end();
+      res.status(400).json(resBody);
+    }
+  }catch(err){
+    console.log(err);
+    let resBody = {
+      status: "error",
+      id: -17,
+      massage: err,
+      debug: {
+      },
+    };
+    res.status(500).json(resBody);
+  }
+}
+exports.add_review = async (req, res) =>{
+  if('id_ad' in req.body && req.body.id_ad && 'id_user' in req.body && req.body.id_user){
+    try{
+      const conn = await mysql.createConnection(DB.config);
+      let id_ad = req.body.id_ad;
+      const user_id = req.body.user_id;
+      const id_user = req.body.id_user;
+      let status_result = 1; //TODO непонятно что за статус. profile php 776стр.
+      let sql = `select * from uni_ads where ads_id =${id_ad}`;
+      let [rows,fields]= await conn.execute(sql);
+      let getAd = rows[0];
+      if(getAd){
+        let sql = `select * from uni_clients_reviews where clients_reviews_from_id_user=${user_id} and clients_reviews_id_user=${id_userin}`;
+        let [rows,fields]= await conn.execute(sql);
+        let status_publication_review = rows[0];
+        if(!status_publication_review){
+          let sql = `INSERT INTO uni_clients_reviews(clients_reviews_id_user,clients_reviews_text,clients_reviews_from_id_user,clients_reviews_rating,clients_reviews_id_ad,clients_reviews_status_result,clients_reviews_files,clients_reviews_date)VALUES(?,?,?,?,?,?,?,?)`;
+          let [rows,fields]= await conn.execute(sql);
+        }else{
+          res.send("Вы уже оставляли отзыв для данного товара!");
+        }
+      }else{
+        res.send("товар не найден");
+      }
+      
+    }catch(err){
+      console.log(err);
+      let resBody = {
+        status: "error",
+        id: -17,
+        massage: err,
+        debug: {
+        },
+      };
+      res.status(500).json(resBody);
+    }
+  }else{
+    let resBody = {
+      status: "error",
+      id: -17,
+      massage: "Empty id_ad or id_userin body request.",
+      debug: {
+        "id_ad": req.body.id_ad,
+        "type id_ad": typeof req.body.id_ad,
+        "id_userin": req.body.id_userin,
+        "type id_userin": typeof req.body.id_userin
+      },
+    };
+  conn.end();
+  res.status(400).json(resBody);
+}
+  res.send("add_review")
+}
+
+exports.del_review = (req, res) =>{
+  res.send("del_review")
+}
+
+
+
+async function stat(id_ad,from_user_id,to_user_id, action){
+  const conn = await mysql.createConnection(DB.config);
+  let sql = `select * from uni_action_statistics where date(action_statistics_date)="${moment().format("YYYY-MM-DD HH:mm:ss")}" and action_statistics_from_user_id=${from_user_id} and action_statistics_ad_id=${to_user_id} and action_statistics_action="${action}"`;
+  let [rows,fields]= await conn.execute(sql);
+  let find = rows[0];
+  if(find){
+    let sql = `INSERT INTO uni_action_statistics(action_statistics_date,action_statistics_ad_id,action_statistics_from_user_id,action_statistics_to_user_id,action_statistics_action)VALUES("${moment().format("YYYY-MM-DD HH:mm:ss")}",${id_ad},${from_user_id},${to_user_id},"${action}")`;
+    let [rows,fields]= await conn.execute(sql);
+  }
+  conn.end();
+}
