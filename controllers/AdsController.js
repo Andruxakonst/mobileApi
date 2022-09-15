@@ -83,6 +83,84 @@ exports.create = async (req,res)=>{
   }
 }
 
+exports.update = async (req,res)=>{
+  let user_id = req.body.user_id;
+  const conn = await mysql.createConnection(DB.config);
+  if(req.files.length >0){
+    let {ads_id, title, text, id_cat, price, address, city_id, region_id, country_id, currency ,tags} = req.body;
+
+    if(title !="undefined"&& 
+        text !="undefined"&& 
+        id_cat !="undefined"&& 
+        price !="undefined"&& 
+        address !="undefined"&& 
+        city_id !="undefined"&& 
+        region_id !="undefined"&& 
+        country_id !="undefined"&& 
+        currency !="undefined" &&
+        ads_id !="undefined"
+        ){
+        try {
+          let fileSaves = await fn.fileSave(req.files);
+        if(!('err' in fileSaves)){
+          let val =[
+              title,
+              fn.translit(title),
+              text,
+              id_cat,
+              user_id,
+              JSON.stringify(fileSaves),
+              price,
+              address,
+              moment().add(30, 'days').format('YYYY-MM-DD HH:mm:ss'),
+              city_id,
+              5,
+              region_id,
+              country_id,
+              currency,
+              30,
+              tags,
+              0,
+              moment().format('YYYY-MM-DD HH:mm:ss'),
+              ads_id
+            ];
+            let sql = `
+              update uni_ads set
+                ads_title =?,
+                ads_alias =?,
+                ads_text =?,
+                ads_id_cat =?,
+                ads_id_user =?,
+                ads_images =?,
+                ads_price =?,
+                ads_address =?,
+                ads_period_publication =?,
+                ads_city_id =?,
+                ads_status =?,
+                ads_region_id =?,
+                ads_country_id =?,
+                ads_currency =?,
+                ads_period_day =?,
+                ads_filter_tags =?,
+                ads_available_unlimitedly =?,
+                ads_datetime_add =?
+              where ads_id = ?`;
+            let [rows,fields]= await conn.execute(sql,val);
+            res.json('Updated');
+          }else{
+            res.status(500),json(fileSaves);
+          }
+        } catch (error) {
+          console.log('error',error)
+        }
+    }else{
+      res.status(400).send('Недостаточно входных данных');
+    }
+  }else{
+    res.send('нет изображений для загрузки');
+  }
+}
+
 exports.addvip = (req,res)=>{
   //Добавление объявлений для Vip массово
     let sql='';
