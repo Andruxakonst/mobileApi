@@ -504,10 +504,19 @@ exports.add_review = async (req, res) =>{
   }
 }
 
-exports.del_review = (req, res) =>{
-  res.send("del_review")
+exports.del = async (req, res) =>{
+  try {
+    let user_id = req.body.user_id;
+    user_id = 9;
+    const conn = await mysql.createConnection(DB.config);
+    let sql = `DELETE FROM uni_clients WHERE clients_id = ${user_id}`;
+    let [rows,fields]= await conn.execute(sql);
+    res.send("User deleted")
+  } catch (error) {
+    console.log(error)
+    res.status(500).join(error)
+  }
 }
-
 
 
 async function stat(id_ad,from_user_id,to_user_id, action){
