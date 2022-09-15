@@ -153,3 +153,13 @@ exports.metro = (req,res)=>{
         }
     });
 }
+
+exports.support = (req,res)=>{
+    res.send("Контактные данные техничесой поддержки");
+}
+exports.secur = (req,res)=>{
+    res.send("Текст политики конфеденциальности");
+}
+exports.tutor = (req,res)=>{
+    res.send("Руководство пользователя");
+}
