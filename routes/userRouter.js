@@ -11,7 +11,9 @@ userRouter.get("/getMagazin", Auth.authHeaderId, User.getMagazin);
 userRouter.get("/order", Auth.authHeaderToken, User.order);
 userRouter.get("/sale", Auth.authHeaderToken, User.sale);
 userRouter.post("/favorite", Auth.authHeaderToken, User.favorite);
+userRouter.get("/favorite", Auth.authHeaderToken, User.favoriteGet);
 userRouter.post("/add_review", Auth.authHeaderToken, User.add_review);
 userRouter.post("/del", Auth.authHeaderToken, User.del);
+userRouter.post("/stat", Auth.authHeaderToken, User.stat);
 
 module.exports = userRouter;

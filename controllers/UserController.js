@@ -375,7 +375,8 @@ exports.sale = (req, res) => {
       res.json(results);
     }
   });
-};
+}
+
 exports.favorite = async (req, res) => {
   try{
     const conn = await mysql.createConnection(DB.config);
@@ -432,6 +433,28 @@ exports.favorite = async (req, res) => {
     res.status(500).json(resBody);
   }
 }
+
+exports.favoriteGet = async (req, res)=>{
+  const user_id = req.body.user_id
+  const conn = await mysql.createConnection(DB.config);
+  try {
+    let sql = `select * from uni_favorites where favorites_from_id_user =${user_id}`;
+    let [rows,fields]= await conn.execute(sql);
+    res.json(rows);
+  } catch (err) {
+    console.log(err);
+    let resBody = {
+      status: "error",
+      id: -17,
+      massage: err,
+      debug: {
+      },
+    };
+    res.status(500).json(resBody);
+  }
+  
+}
+
 exports.add_review = async (req, res) =>{
   if('stars' in req.body && req.body.stars &&'text' in req.body && req.body.text &&'id_ad' in req.body && req.body.id_ad && 'id_user' in req.body && req.body.id_user){
     try{
@@ -507,17 +530,39 @@ exports.add_review = async (req, res) =>{
 exports.del = async (req, res) =>{
   try {
     let user_id = req.body.user_id;
-    user_id = 9;
     const conn = await mysql.createConnection(DB.config);
     let sql = `DELETE FROM uni_clients WHERE clients_id = ${user_id}`;
     let [rows,fields]= await conn.execute(sql);
+    conn.end();
     res.send("User deleted")
   } catch (error) {
+    conn.end();
     console.log(error)
     res.status(500).join(error)
   }
 }
 
+exports.stat = async (req, res) =>{
+  try {
+    const conn = await mysql.createConnection(DB.config);
+    let user_id = req.body.user_id;
+    let ad_id = req.body.ad_id;
+    if(ad_id){
+      let sql = `select * from uni_action_statistics where action_statistics_to_user_id=${user_id} and action_statistics_ad_id=${ad_id}`;
+      let [rows,fields]= await conn.execute(sql);
+      var get = rows;
+    }else{
+      let sql = `select * from uni_action_statistics where action_statistics_to_user_id=${user_id}`;
+      let [rows,fields]= await conn.execute(sql);
+      var get = rows;
+    }
+    conn.end();
+    res.json(get);
+  } catch (error) {
+    console.log(error)
+    res.status(500).join(error)
+  }
+}
 
 async function stat(id_ad,from_user_id,to_user_id, action){
   const conn = await mysql.createConnection(DB.config);
