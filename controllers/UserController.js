@@ -323,24 +323,45 @@ exports.user_edit = (req, res) => {
   });
 };
 exports.order = (req, res) => {
-  let sql = `
+  let sql='';
+  if(req.body.id || req.body.limit || req.body.offset){
+  sql = `
         SELECT 
-        orders_id,
-        orders_uid,
-        orders_price,
-        orders_date,
-        orders_status,
-        orders_title,
-        orders_id_ad,
-        orders_action_name 
+        orders_id as id,
+        orders_uid as uid,
+        orders_price as price,
+        orders_date as date,
+        orders_status as status,
+        orders_title as title,
+        orders_id_ad as id_ad,
+        orders_action_name as action_name
         FROM 
         uni_orders 
         WHERE 
         orders_id_user= '${req.body.user_id}'`;
-  if (req.query && "id" in req.query && req.query.id != "") {
-    sql += `
-                AND orders_id ='${req.query.id}'
-            `;
+  }else{
+    sql = `
+        SELECT 
+        orders_id as id,
+        orders_price as price,
+        orders_date as date,
+        orders_title as title,
+        orders_id_ad as id_ad
+        FROM 
+        uni_orders 
+        WHERE 
+        orders_id_user= '${req.body.user_id}'`;
+  }
+  if(req.body){
+    if(typeof req.body.id != 'undefined'){
+      sql += `AND orders_id = ${req.body.id} `;
+    }
+    if(typeof req.body.limit != 'undefined'){
+      sql += `LIMIT ${req.body.limit} `;
+    }
+    if(typeof req.body.offset != 'undefined' && req.body.offset !=0){
+      sql += `OFFSET ${req.body.offset} `;
+    }
   }
   DB.connection.query(sql, (err, results) => {
     if (err) {
@@ -350,24 +371,102 @@ exports.order = (req, res) => {
     }
   });
 };
+
 exports.sale = (req, res) => {
-  let id_sale = "";
-  if (req.query && "id" in req.query && req.query.id != "") {
-    id_sale = `AND a.ads_id =${req.query.id}`;
-  }
-  let sql = `
-    SELECT 
-      a.*
-  FROM
+  let sql='';
+  if(req.body.id || req.body.limit || req.body.offset){
+  sql = `
+      SELECT 
+      a.ads_id as id,
+      a.ads_title as title,
+      a.ads_alias as alias,
+      a.ads_text as text,
+      a.ads_id_cat as id_cat,
+      a.ads_datetime_add as datetime_add,
+      a.ads_datetime_view as datetime_view,
+      a.ads_id_user as id_user,
+      a.ads_images as images,
+      a.ads_price as price,
+      a.ads_address as ddress,
+      a.ads_latitude as latitude,
+      a.ads_longitude as longitude,
+      a.ads_metro_ids as metro_ids,
+      a.ads_period_publication as eriod_publication,
+      a.ads_city_id as city_id,
+      a.ads_region_id as region_id,
+      a.ads_country_id as country_id,
+      a.ads_note as note,
+      a.ads_count_display as count_display,
+      a.ads_currency as currency,
+      a.ads_period_day as period_day,
+      a.ads_update as 'update',
+      a.ads_auction as auction,
+      a.ads_auction_duration as auction_duration,
+      a.ads_auction_price_sell as auction_price_sell,
+      a.ads_auction_day as auction_day,
+      a.ads_area_ids as area_ids,
+      a.ads_vip as vip,
+      a.ads_online_view as online_view,
+      a.ads_price_old as price_old,
+      a.ads_filter_tags as filter_tags,
+      a.ads_price_free as price_free,
+      a.ads_booking as booking,
+      a.ads_booking_additional_services as booking_additional_services,
+      a.ads_booking_prepayment_percent as booking_prepayment_percent,
+      a.ads_booking_max_guests as booking_max_guests,
+      a.ads_booking_min_days as booking_min_days,
+      a.ads_booking_max_days as booking_max_days,
+      a.ads_booking_available as booking_available,
+      a.ads_booking_available_unlimitedly as booking_available_unlimitedly
+    FROM
     uni_ads a
-  WHERE
+    WHERE
       a.ads_id_user= '${req.body.user_id}'
       AND
-      a.ads_status = 5
-      ${id_sale}
-  ORDER BY
-      a.ads_id`;
-
+      a.ads_status = 5 `;
+  }else{
+    sql = `
+    SELECT 
+    a.ads_id as id,
+    a.ads_title as title,
+    a.ads_text as text,
+    a.ads_id_cat as id_cat,
+    a.ads_datetime_add as datetime_add,
+    a.ads_id_user as id_user,
+    a.ads_images as images,
+    a.ads_price as price,
+    a.ads_address as ddress,
+    a.ads_city_id as city_id,
+    a.ads_region_id as region_id,
+    a.ads_country_id as country_id,
+    a.ads_auction as auction,
+    a.ads_area_ids as area_ids,
+    a.ads_vip as vip,
+    a.ads_price_old as price_old,
+    a.ads_price_free as price_free,
+    a.ads_booking as booking
+      FROM
+      uni_ads a
+      WHERE
+        a.ads_id_user= '${req.body.user_id}'
+        AND
+        a.ads_status = 5 `;
+  }
+  if(req.body){
+    if(typeof req.body.id != 'undefined'){
+      sql += `AND a.ads_id = ${req.body.id} `;
+    }
+    
+    if(typeof req.body.limit != 'undefined'){
+      sql += `LIMIT ${req.body.limit} `;
+    }
+    if(typeof req.body.offset != 'undefined' && req.body.offset !=0){
+      sql += `OFFSET ${req.body.offset} `;
+    }
+  }else{
+    sql =+ `ORDER BY a.ads_id `;
+  }
+  
   DB.connection.query(sql, (err, results) => {
     if (err) {
       res.status(404).send(`Не удалось получить данные из базы. ${err} ${sql}`);
@@ -434,11 +533,20 @@ exports.favorite = async (req, res) => {
   }
 }
 
-exports.favoriteGet = async (req, res)=>{
+exports.favorite_get = async (req, res)=>{
   const user_id = req.body.user_id
   const conn = await mysql.createConnection(DB.config);
   try {
-    let sql = `select * from uni_favorites where favorites_from_id_user =${user_id}`;
+    let sql = `select * from uni_favorites where favorites_from_id_user = ${user_id} `;
+      if(typeof req.body.id != 'undefined'){
+        sql += `AND favorites_id = ${req.body.id} `;
+      }
+      if(typeof req.body.limit != 'undefined'){
+        sql += `LIMIT ${req.body.limit} `;
+      }
+      if(typeof req.body.offset != 'undefined' && req.body.offset !=0){
+        sql += `OFFSET ${req.body.offset} `;
+      }
     let [rows,fields]= await conn.execute(sql);
     res.json(rows);
   } catch (err) {
