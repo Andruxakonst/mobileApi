@@ -311,7 +311,7 @@ exports.list = (req,res)=>{
       sql += `LIMIT 10000`;
     };
     sql += ` `;
-    if(typeof req.body.offset != 'undefined'){
+    if(typeof req.body.offset != 'undefined' && req.body.offset !=0){
       sql += `OFFSET ${req.body.offset}`;
     }else{
       sql += `OFFSET 0`;

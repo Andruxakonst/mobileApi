@@ -1237,9 +1237,6 @@
     },
     "/user/favorite": {
       "get": {
-        "tags": [
-          "user"
-        ],
         "summary": "Получение списка избранных товаров",
         "description": "Получение списка избранных товаров",
         "produces": [
@@ -1291,7 +1288,10 @@
             }
           }
         },
-        "operationId": "user-favorite-get"
+        "operationId": "user-favorite-get",
+        "tags": [
+          "user"
+        ]
       },
       "parameters": [],
       "post": {
@@ -1302,9 +1302,6 @@
             "description": "Added или Delett"
           }
         },
-        "tags": [
-          "User"
-        ],
         "description": "Добавление\\удаление избранного",
         "parameters": [
           {
@@ -1331,6 +1328,9 @@
             },
             "description": "Id объявления. Если объявление уже было в избранном, то оно будет удалено из списка"
           }
+        ],
+        "tags": [
+          "user"
         ]
       }
     },
@@ -2674,6 +2674,143 @@
         ]
       }
     },
+    "/user/my_review": {
+      "post": {
+        "summary": "Получение отзывов пользователя",
+        "operationId": "post-гыук-my_review",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "clients_reviews_id": {
+                    "type": "integer"
+                  },
+                  "clients_reviews_id_user": {
+                    "type": "integer"
+                  },
+                  "clients_reviews_text": {
+                    "type": "string"
+                  },
+                  "clients_reviews_date": {
+                    "type": "string"
+                  },
+                  "clients_reviews_from_id_user": {
+                    "type": "integer"
+                  },
+                  "clients_reviews_rating": {
+                    "type": "integer"
+                  },
+                  "clients_reviews_status": {
+                    "type": "integer"
+                  },
+                  "clients_reviews_id_ad": {
+                    "type": "integer"
+                  },
+                  "clients_reviews_status_result": {
+                    "type": "integer"
+                  },
+                  "clients_reviews_files": {
+                    "type": "null"
+                  },
+                  "clients_reviews_id_parent": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": [
+                  {
+                    "clients_reviews_id": 1,
+                    "clients_reviews_id_user": 3,
+                    "clients_reviews_text": "texte texttd",
+                    "clients_reviews_date": "2022-09-13T23:09:58.000Z",
+                    "clients_reviews_from_id_user": 8,
+                    "clients_reviews_rating": 5,
+                    "clients_reviews_status": 1,
+                    "clients_reviews_id_ad": 44,
+                    "clients_reviews_status_result": 1,
+                    "clients_reviews_files": null,
+                    "clients_reviews_id_parent": 0
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -1,
+                  "massage": "Unauthorized. Missing auth in headers",
+                  "debug": {}
+                }
+              }
+            }
+          }
+        },
+        "description": "Получение отзывов пользователя",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "offset": {
+                  "type": "integer"
+                },
+                "limit": {
+                  "type": "integer"
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "id": 1,
+                  "offset": 0,
+                  "limit": 1
+                }
+              }
+            },
+            "description": "данные для ограничия выдачи. Все поля не являютя обязательными"
+          },
+          {
+            "type": "string",
+            "in": "header",
+            "name": "token",
+            "description": "Токен пользователя"
+          }
+        ],
+        "tags": [
+          "user"
+        ]
+      },
+      "parameters": []
+    },
     "/ads/AddMass": {
       "post": {
         "tags": [
@@ -3001,7 +3138,7 @@
       },
       "parameters": []
     },
-    "/ads/categorie": {
+    "/ads/category": {
       "get": {
         "summary": "Получение отдельной категории",
         "tags": [
@@ -9951,309 +10088,252 @@
       "parameters": []
     },
     "/user/order": {
-      "get": {
-        "summary": "Получение заказов",
-        "tags": [
-          "user"
-        ],
+      "parameters": [],
+      "post": {
+        "summary": "Получение списка ордеров",
+        "operationId": "post-user-order",
         "responses": {
           "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string"
-                },
-                "id": {
-                  "type": "integer"
-                },
-                "massage": {
-                  "type": "string"
-                },
-                "debug": {
-                  "type": "object",
-                  "properties": {
-                    "req.body": {
-                      "type": "object",
-                      "properties": {}
-                    },
-                    "req.body type": {
-                      "type": "string"
-                    }
-                  }
-                }
-              },
-              "x-examples": {
-                "example-1": {
-                  "status": "error",
-                  "id": -3,
-                  "massage": "Empty token in request body or request body = undefined",
-                  "debug": {
-                    "req.body": {},
-                    "req.body type": "object"
-                  }
-                }
-              }
-            }
-          },
-          "": {
-            "description": "Ответ положительный. Если есть id - ответ с одним ордером, если id нет или пуст - все ордеры",
+            "description": "В схеме указаны расширенные данные. Ниже пример урезаннын.\n[\n    {\n        \"id\": 49,\n        \"title\": \"test 4\",\n        \"text\": \"text2 text2 text2 text2\",\n        \"id_cat\": 27,\n        \"datetime_add\": \"2022-08-13T22:55:25.000Z\",\n        \"id_user\": 2,\n        \"images\": \"[]\",\n        \"price\": 20000,\n        \"ddress\": \"address2 address2 address2 address2\",\n        \"city_id\": 376,\n        \"region_id\": 33,\n        \"country_id\": 1,\n        \"auction\": 0,\n        \"area_ids\": \"\",\n        \"vip\": 0,\n        \"price_old\": 0,\n        \"price_free\": 0,\n        \"booking\": 0\n    }\n]",
             "schema": {
               "type": "array",
               "items": {
                 "type": "object",
                 "properties": {
-                  "orders_id": {
+                  "id": {
                     "type": "integer"
                   },
-                  "orders_uid": {
+                  "title": {
                     "type": "string"
                   },
-                  "orders_price": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "id_cat": {
                     "type": "integer"
                   },
-                  "orders_date": {
+                  "datetime_add": {
                     "type": "string"
                   },
-                  "orders_status": {
+                  "id_user": {
                     "type": "integer"
                   },
-                  "orders_title": {
+                  "images": {
                     "type": "string"
                   },
-                  "orders_id_ad": {
+                  "price": {
                     "type": "integer"
                   },
-                  "orders_action_name": {
+                  "ddress": {
                     "type": "string"
+                  },
+                  "city_id": {
+                    "type": "integer"
+                  },
+                  "region_id": {
+                    "type": "integer"
+                  },
+                  "country_id": {
+                    "type": "integer"
+                  },
+                  "auction": {
+                    "type": "integer"
+                  },
+                  "area_ids": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "vip": {
+                    "type": "integer"
+                  },
+                  "price_old": {
+                    "type": "integer"
+                  },
+                  "price_free": {
+                    "type": "integer"
+                  },
+                  "booking": {
+                    "type": "integer"
                   }
                 }
               },
               "x-examples": {
                 "example-1": [
                   {
-                    "orders_id": 2,
-                    "orders_uid": "77814634",
-                    "orders_price": 990,
-                    "orders_date": "2022-07-11T10:09:19.000Z",
-                    "orders_status": 0,
-                    "orders_title": "Подключение тарифа - Максимум",
-                    "orders_id_ad": 0,
-                    "orders_action_name": "services_tariff"
+                    "id": 49,
+                    "title": "test 4",
+                    "text": "text2 text2 text2 text2",
+                    "id_cat": 27,
+                    "datetime_add": "2022-08-13T22:55:25.000Z",
+                    "id_user": 2,
+                    "images": "[]",
+                    "price": 20000,
+                    "ddress": "address2 address2 address2 address2",
+                    "city_id": 376,
+                    "region_id": 33,
+                    "country_id": 1,
+                    "auction": 0,
+                    "area_ids": "",
+                    "vip": 0,
+                    "price_old": 0,
+                    "price_free": 0,
+                    "booking": 0
+                  },
+                  {
+                    "id": 54,
+                    "title": "тестов тест",
+                    "text": "ryrrt",
+                    "id_cat": 1,
+                    "datetime_add": "2022-09-15T22:38:31.000Z",
+                    "id_user": 2,
+                    "images": "[\"./upload/1663281511080_bg.png\"]",
+                    "price": 44,
+                    "ddress": "asbfsd",
+                    "city_id": 2,
+                    "region_id": 3,
+                    "country_id": 2,
+                    "auction": 0,
+                    "area_ids": null,
+                    "vip": 0,
+                    "price_old": 0,
+                    "price_free": 0,
+                    "booking": 0
+                  },
+                  {
+                    "id": 55,
+                    "title": "sesg",
+                    "text": "ryrrt",
+                    "id_cat": 1,
+                    "datetime_add": "2022-09-16T15:55:08.000Z",
+                    "id_user": 2,
+                    "images": "[\"./upload/1663343708422_памятка ЛС.jpg\"]",
+                    "price": 44,
+                    "ddress": "asbfsd",
+                    "city_id": 2,
+                    "region_id": 3,
+                    "country_id": 2,
+                    "auction": 0,
+                    "area_ids": null,
+                    "vip": 0,
+                    "price_old": 0,
+                    "price_free": 0,
+                    "booking": 0
                   }
                 ]
               }
             }
           }
         },
-        "operationId": "get-user-order",
+        "tags": [
+          "user"
+        ],
+        "description": "Получение списка ордеров",
         "parameters": [
           {
             "type": "string",
             "in": "header",
-            "name": "token"
+            "name": "token",
+            "description": "token пользователя"
           },
           {
-            "type": "string",
-            "in": "query",
-            "description": "Необязательный",
-            "name": "id"
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "offset": {
+                  "type": "integer"
+                },
+                "limit": {
+                  "type": "integer"
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "id": 54,
+                  "offset": 0,
+                  "limit": 3
+                }
+              }
+            },
+            "description": "Все поля не обязательны. Если присутсвует хотя бы 1 поле, данные придут расширенные"
           }
-        ],
-        "description": "Получение orders"
-      },
-      "parameters": []
+        ]
+      }
     },
-    "/user/sale": {
-      "get": {
-        "summary": "Получение продаж",
-        "tags": [
-          "user"
-        ],
+    "/user/favorite_get": {
+      "parameters": [],
+      "post": {
+        "summary": "Получение списка избранных объявлений",
+        "operationId": "post-user-favorite_get",
         "responses": {
           "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string"
-                },
-                "id": {
-                  "type": "integer"
-                },
-                "massage": {
-                  "type": "string"
-                },
-                "debug": {
-                  "type": "object",
-                  "properties": {
-                    "req.body": {
-                      "type": "object",
-                      "properties": {}
-                    },
-                    "req.body type": {
-                      "type": "string"
-                    }
-                  }
-                }
-              },
-              "x-examples": {
-                "example-1": {
-                  "status": "error",
-                  "id": -3,
-                  "massage": "Empty token in request body or request body = undefined",
-                  "debug": {
-                    "req.body": {},
-                    "req.body type": "object"
-                  }
-                }
-              }
-            }
-          },
-          "": {
-            "description": "Ответ положительный. Если есть id - ответ с одним sale, если id нет или пуст - все sale",
+            "description": "В схеме указаны расширенные данные. Ниже пример урезаннын.\n[\n    {\n        \"id\": 49,\n        \"title\": \"test 4\",\n        \"text\": \"text2 text2 text2 text2\",\n        \"id_cat\": 27,\n        \"datetime_add\": \"2022-08-13T22:55:25.000Z\",\n        \"id_user\": 2,\n        \"images\": \"[]\",\n        \"price\": 20000,\n        \"ddress\": \"address2 address2 address2 address2\",\n        \"city_id\": 376,\n        \"region_id\": 33,\n        \"country_id\": 1,\n        \"auction\": 0,\n        \"area_ids\": \"\",\n        \"vip\": 0,\n        \"price_old\": 0,\n        \"price_free\": 0,\n        \"booking\": 0\n    }\n]",
             "schema": {
               "type": "array",
               "items": {
                 "type": "object",
                 "properties": {
-                  "ads_id": {
+                  "id": {
                     "type": "integer"
                   },
-                  "ads_title": {
+                  "title": {
                     "type": "string"
                   },
-                  "ads_alias": {
+                  "text": {
                     "type": "string"
                   },
-                  "ads_text": {
+                  "id_cat": {
+                    "type": "integer"
+                  },
+                  "datetime_add": {
                     "type": "string"
                   },
-                  "ads_id_cat": {
+                  "id_user": {
                     "type": "integer"
                   },
-                  "ads_datetime_add": {
+                  "images": {
                     "type": "string"
                   },
-                  "ads_datetime_view": {
-                    "type": "null"
-                  },
-                  "ads_id_user": {
+                  "price": {
                     "type": "integer"
                   },
-                  "ads_images": {
+                  "ddress": {
                     "type": "string"
                   },
-                  "ads_price": {
+                  "city_id": {
                     "type": "integer"
                   },
-                  "ads_address": {
-                    "type": "string"
-                  },
-                  "ads_latitude": {
-                    "type": "string"
-                  },
-                  "ads_longitude": {
-                    "type": "string"
-                  },
-                  "ads_metro_ids": {
-                    "type": "string"
-                  },
-                  "ads_period_publication": {
-                    "type": "string"
-                  },
-                  "ads_city_id": {
+                  "region_id": {
                     "type": "integer"
                   },
-                  "ads_status": {
+                  "country_id": {
                     "type": "integer"
                   },
-                  "ads_region_id": {
+                  "auction": {
                     "type": "integer"
                   },
-                  "ads_country_id": {
+                  "area_ids": {
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  "vip": {
                     "type": "integer"
                   },
-                  "ads_note": {
-                    "type": "string"
-                  },
-                  "ads_count_display": {
+                  "price_old": {
                     "type": "integer"
                   },
-                  "ads_currency": {
-                    "type": "string"
-                  },
-                  "ads_period_day": {
+                  "price_free": {
                     "type": "integer"
                   },
-                  "ads_update": {
-                    "type": "null"
-                  },
-                  "ads_sorting": {
-                    "type": "integer"
-                  },
-                  "ads_auction": {
-                    "type": "integer"
-                  },
-                  "ads_auction_duration": {
-                    "type": "null"
-                  },
-                  "ads_auction_price_sell": {
-                    "type": "integer"
-                  },
-                  "ads_auction_day": {
-                    "type": "integer"
-                  },
-                  "ads_area_ids": {
-                    "type": "string"
-                  },
-                  "ads_id_import": {
-                    "type": "null"
-                  },
-                  "ads_import_images": {
-                    "type": "null"
-                  },
-                  "ads_video": {
-                    "type": "null"
-                  },
-                  "ads_vip": {
-                    "type": "integer"
-                  },
-                  "ads_auto_renewal": {
-                    "type": "integer"
-                  },
-                  "ads_online_view": {
-                    "type": "integer"
-                  },
-                  "ads_price_old": {
-                    "type": "integer"
-                  },
-                  "ads_filter_tags": {
-                    "type": "string"
-                  },
-                  "ads_price_free": {
-                    "type": "integer"
-                  },
-                  "ads_available": {
-                    "type": "integer"
-                  },
-                  "ads_available_unlimitedly": {
+                  "booking": {
                     "type": "integer"
                   }
                 }
@@ -10261,70 +10341,112 @@
               "x-examples": {
                 "example-1": [
                   {
-                    "ads_id": 1,
-                    "ads_title": "BMW X6 M Competition III (F96)",
-                    "ads_alias": "bmw-x6-m-competition-iii-f96",
-                    "ads_text": "Отличное состояние",
-                    "ads_id_cat": 27,
-                    "ads_datetime_add": "2022-07-11T10:07:09.000Z",
-                    "ads_datetime_view": null,
-                    "ads_id_user": 2,
-                    "ads_images": "[\"62cbf5d475fe8.webp\"]",
-                    "ads_price": 1500000,
-                    "ads_address": "",
-                    "ads_latitude": "0",
-                    "ads_longitude": "0",
-                    "ads_metro_ids": "",
-                    "ads_period_publication": "2022-08-10T10:06:53.000Z",
-                    "ads_city_id": 376,
-                    "ads_status": 1,
-                    "ads_region_id": 33,
-                    "ads_country_id": 1,
-                    "ads_note": "",
-                    "ads_count_display": 7,
-                    "ads_currency": "RUB",
-                    "ads_period_day": 30,
-                    "ads_update": null,
-                    "ads_sorting": 0,
-                    "ads_auction": 0,
-                    "ads_auction_duration": null,
-                    "ads_auction_price_sell": 0,
-                    "ads_auction_day": 0,
-                    "ads_area_ids": "",
-                    "ads_id_import": null,
-                    "ads_import_images": null,
-                    "ads_video": null,
-                    "ads_vip": 0,
-                    "ads_auto_renewal": 0,
-                    "ads_online_view": 1,
-                    "ads_price_old": 0,
-                    "ads_filter_tags": "Марка:BMW;Модель:X6 M;Коробка:Автомат;Тип кузова:Внедорожник;Мощность, л.с:1000;Объем, л:25;Состояние:Не битый;Руль:Левый",
-                    "ads_price_free": 0,
-                    "ads_available": 0,
-                    "ads_available_unlimitedly": 1
+                    "id": 49,
+                    "title": "test 4",
+                    "text": "text2 text2 text2 text2",
+                    "id_cat": 27,
+                    "datetime_add": "2022-08-13T22:55:25.000Z",
+                    "id_user": 2,
+                    "images": "[]",
+                    "price": 20000,
+                    "ddress": "address2 address2 address2 address2",
+                    "city_id": 376,
+                    "region_id": 33,
+                    "country_id": 1,
+                    "auction": 0,
+                    "area_ids": "",
+                    "vip": 0,
+                    "price_old": 0,
+                    "price_free": 0,
+                    "booking": 0
+                  },
+                  {
+                    "id": 54,
+                    "title": "тестов тест",
+                    "text": "ryrrt",
+                    "id_cat": 1,
+                    "datetime_add": "2022-09-15T22:38:31.000Z",
+                    "id_user": 2,
+                    "images": "[\"./upload/1663281511080_bg.png\"]",
+                    "price": 44,
+                    "ddress": "asbfsd",
+                    "city_id": 2,
+                    "region_id": 3,
+                    "country_id": 2,
+                    "auction": 0,
+                    "area_ids": null,
+                    "vip": 0,
+                    "price_old": 0,
+                    "price_free": 0,
+                    "booking": 0
+                  },
+                  {
+                    "id": 55,
+                    "title": "sesg",
+                    "text": "ryrrt",
+                    "id_cat": 1,
+                    "datetime_add": "2022-09-16T15:55:08.000Z",
+                    "id_user": 2,
+                    "images": "[\"./upload/1663343708422_памятка ЛС.jpg\"]",
+                    "price": 44,
+                    "ddress": "asbfsd",
+                    "city_id": 2,
+                    "region_id": 3,
+                    "country_id": 2,
+                    "auction": 0,
+                    "area_ids": null,
+                    "vip": 0,
+                    "price_old": 0,
+                    "price_free": 0,
+                    "booking": 0
                   }
                 ]
               }
             }
+          },
+          "": {
+            "description": "ответ при успехе"
           }
         },
-        "operationId": "get-user-sale",
+        "tags": [
+          "user"
+        ],
+        "description": "Получение списка избранных объявлений",
         "parameters": [
           {
             "type": "string",
             "in": "header",
-            "name": "token"
+            "name": "token",
+            "description": "token пользователя"
           },
           {
-            "type": "string",
-            "in": "query",
-            "name": "id",
-            "description": "Необязательный"
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "offset": {
+                  "type": "integer"
+                },
+                "limit": {
+                  "type": "integer"
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "id": 54,
+                  "offset": 0,
+                  "limit": 3
+                }
+              }
+            },
+            "description": "Все поля не обязательны. Если присутсвует хотя бы 1 поле, данные придут расширенные"
           }
-        ],
-        "description": "Получение sale"
-      },
-      "parameters": []
+        ]
+      }
     },
     "/direct/country": {
       "get": {
