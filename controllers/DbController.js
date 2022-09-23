@@ -15,13 +15,13 @@ const mysql = require("mysql2");
 //     password: "k8?QxeUQZVTe"
 // };
 
-// exports.connection = mysql.createConnection({
-//     host: "localhost",
-//     port:"",
-//     user: "root",
-//     database: "aerinee_crowdfaster",
-//     password: ""
-// });
+exports.connection = mysql.createConnection({
+    host: "localhost",
+    port:"",
+    user: "root",
+    database: "aerinee_crowdfaster",
+    password: ""
+});
 
 exports.config = {
     host: "localhost",

@@ -455,7 +455,35 @@ exports.favoriteGet = async (req, res)=>{
   
 }
 exports.my_review = async (req, res) =>{
-  
+  const user_id = req.body.user_id
+  const conn = await mysql.createConnection(DB.config);
+  try {
+    let sql = `select * from uni_clients_reviews where clients_reviews_from_id_user=${user_id} `;
+
+    if(req.body){
+      if(typeof req.body.id != 'undefined'){
+        sql += `and clients_reviews_id = ${req.body.id} `;
+      }
+      if(typeof req.body.limit != 'undefined'){
+        sql += `LIMIT ${req.body.limit} `;
+      }
+      if(typeof req.body.offset != 'undefined'){
+        sql += `OFFSET ${req.body.offset} `;
+      }
+    }
+    let [rows,fields]= await conn.execute(sql);
+    res.json(rows);
+  } catch (err) {
+    console.log(err);
+    let resBody = {
+      status: "error",
+      id: -17,
+      massage: err,
+      debug: {
+      },
+    };
+    res.status(500).json(resBody);
+  }
 }
 exports.add_review = async (req, res) =>{
   if('stars' in req.body && req.body.stars &&'text' in req.body && req.body.text &&'id_ad' in req.body && req.body.id_ad && 'id_user' in req.body && req.body.id_user){

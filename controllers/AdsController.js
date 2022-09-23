@@ -4,8 +4,6 @@ const mysql = require('mysql2/promise');
 var moment = require('moment');
 const fn = require("./FnController");
 
-
-
 exports.create = async (req,res)=>{
   let user_id = req.body.user_id;
   const conn = await mysql.createConnection(DB.config);
