@@ -338,7 +338,7 @@ exports.list = (req,res)=>{
   });
 };
 
-exports.categorie = (req,res)=>{
+exports.category = (req,res)=>{
   if(req.query && 'id' in req.query && req.query.id != ''){
     let sql = `
     SELECT 

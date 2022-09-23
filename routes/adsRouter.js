@@ -13,6 +13,6 @@ adsRouter.post("/addmass", Auth.authHeaderToken, Auth.auth, Ads.addvip);
 adsRouter.post("/vip", Auth.authHeaderToken, Auth.auth, Ads.vip);
 adsRouter.post("/up", Auth.authHeaderToken, Auth.auth, Ads.up);
 adsRouter.post("/turbo",Auth.authHeaderToken, Auth.auth, Ads.turbo);
-adsRouter.get("/categorie", Auth.authHeader, Ads.categorie);
+adsRouter.get("/category", Auth.authHeader, Ads.category);
 
 module.exports = adsRouter;

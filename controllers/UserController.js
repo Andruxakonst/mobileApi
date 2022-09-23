@@ -486,7 +486,7 @@ exports.add_review = async (req, res) =>{
           let [rows,fields]= await conn.execute(sql);
           await user.sendChatAction(id_ad, 4, user_id, id_user);
           conn.end();
-          res.send("Отзыв добавлен.");
+          res.send("Отзыв добавлен");
         }else{
           conn.end();
           res.send("Вы уже оставляли отзыв для данного товара!");
@@ -548,11 +548,25 @@ exports.stat = async (req, res) =>{
     let user_id = req.body.user_id;
     let ad_id = req.body.ad_id;
     if(ad_id){
-      let sql = `select * from uni_action_statistics where action_statistics_to_user_id=${user_id} and action_statistics_ad_id=${ad_id}`;
+      let sql = `select 
+      action_statistics_id as id,
+      action_statistics_date as date,
+      action_statistics_ad_id as ad_id,
+      action_statistics_from_user_id as from_user_id,
+      action_statistics_to_user_id as to_user_id,
+      action_statistics_action as action
+       from uni_action_statistics where action_statistics_to_user_id=${user_id} and action_statistics_ad_id=${ad_id}`;
       let [rows,fields]= await conn.execute(sql);
       var get = rows;
     }else{
-      let sql = `select * from uni_action_statistics where action_statistics_to_user_id=${user_id}`;
+      let sql = `select select 
+      action_statistics_id as id,
+      action_statistics_date as date,
+      action_statistics_ad_id as ad_id,
+      action_statistics_from_user_id as from_user_id,
+      action_statistics_to_user_id as to_user_id,
+      action_statistics_action as action
+      from uni_action_statistics where action_statistics_to_user_id=${user_id}`;
       let [rows,fields]= await conn.execute(sql);
       var get = rows;
     }
