@@ -454,7 +454,9 @@ exports.favoriteGet = async (req, res)=>{
   }
   
 }
-
+exports.my_review = async (req, res) =>{
+  
+}
 exports.add_review = async (req, res) =>{
   if('stars' in req.body && req.body.stars &&'text' in req.body && req.body.text &&'id_ad' in req.body && req.body.id_ad && 'id_user' in req.body && req.body.id_user){
     try{

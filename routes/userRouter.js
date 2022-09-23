@@ -13,6 +13,7 @@ userRouter.get("/sale", Auth.authHeaderToken, User.sale);
 userRouter.post("/favorite", Auth.authHeaderToken, User.favorite);
 userRouter.get("/favorite", Auth.authHeaderToken, User.favoriteGet);
 userRouter.post("/add_review", Auth.authHeaderToken, User.add_review);
+userRouter.get("/my_review", Auth.authHeaderToken, User.my_review);
 userRouter.post("/del", Auth.authHeaderToken, User.del);
 userRouter.get("/stat", Auth.authHeaderToken, User.stat);
 
