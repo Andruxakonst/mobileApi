@@ -15,6 +15,6 @@ userRouter.post("/favorite_get", Auth.authHeaderToken, User.favorite_get);
 userRouter.post("/add_review", Auth.authHeaderToken, User.add_review);
 userRouter.post("/my_review", Auth.authHeaderToken, User.my_review);
 userRouter.post("/del", Auth.authHeaderToken, User.del);
-userRouter.get("/stat", Auth.authHeaderToken, User.stat);
+userRouter.post("/stat", Auth.authHeaderToken, User.stat);
 
 module.exports = userRouter;

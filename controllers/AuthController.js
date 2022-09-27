@@ -240,20 +240,14 @@ exports.authHeaderToken = (req,res,next)=>{
                     FROM 
                         uni_clients 
                     WHERE `;
-                    if(req.body.email){
+                    if(text.email){
                         sql +=`clients_email = "${text.email}"`;
                     }else{
                         sql +=`clients_phone = "${text.tel}"`;
                     };
                     DB.connection.query(sql,
                     (err, results)=>{
-                        if(results){
-                            delete req.body.token;
-                            req.body.user_id = results[0].id;
-                            req.body.email = text.email;
-                            req.body.tel = text.tel;
-                            next();
-                        }else{
+                        if(err){
                             let resBody = {
                                 "status": "error",
                                 "id": -5,
@@ -264,8 +258,15 @@ exports.authHeaderToken = (req,res,next)=>{
                                 }
                             }
                             res.status(400).json(resBody);
-                            }
-                        });
+
+                        }else{
+                            delete req.body.token;
+                            req.body.user_id = results[0].id;
+                            req.body.email = text.email;
+                            req.body.tel = text.tel;
+                            next();
+                        }
+                    });
             }else{
                 let resBody = {
                     "status": "error",

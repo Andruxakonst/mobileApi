@@ -290,11 +290,8 @@ exports.user_get = (req, res) => {
   }
 };
 exports.user_edit = (req, res) => {
-  let data = req.body.data;
-  if (Object.keys(data).length > 0) {
-  } else {
-    console.log("пуст");
-  }
+  let data = req.body;
+  
   let keys = [];
   let values = [];
   let val = new Map(Object.entries(data));
@@ -693,11 +690,11 @@ exports.stat = async (req, res) =>{
       action_statistics_from_user_id as from_user_id,
       action_statistics_to_user_id as to_user_id,
       action_statistics_action as action
-       from uni_action_statistics where action_statistics_to_user_id=${user_id} and action_statistics_ad_id=${ad_id}`;
+      from uni_action_statistics where action_statistics_to_user_id=${user_id} and action_statistics_ad_id=${ad_id}`;
       let [rows,fields]= await conn.execute(sql);
       var get = rows;
     }else{
-      let sql = `select select 
+      let sql = `select 
       action_statistics_id as id,
       action_statistics_date as date,
       action_statistics_ad_id as ad_id,

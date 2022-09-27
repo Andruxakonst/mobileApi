@@ -876,30 +876,79 @@
               }
             },
             "description": "Данные пользователя"
-          },
-          {
-            "type": "string",
-            "in": "header",
-            "name": "token"
           }
         ],
         "responses": {
           "200": {
             "description": "Удачное выполнение",
             "schema": {
-              "type": "object",
-              "x-examples": {
-                "example-1": {
-                  "results": {
-                    "fieldCount": 0,
-                    "affectedRows": 1,
-                    "insertId": 8,
-                    "info": "",
-                    "serverStatus": 2,
-                    "warningStatus": 0,
-                    "token": "yJlbWFpbCI6IjdAeWFuZGV4LnJ1IiwidGVsIjoiNzk5OTY1NjcwODEifQ==e"
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "datetime_add": {
+                    "type": "string"
+                  },
+                  "social_identity": {
+                    "type": "null"
+                  },
+                  "status": {
+                    "type": "integer"
+                  },
+                  "avatar": {
+                    "type": "null"
+                  },
+                  "datetime_view": {
+                    "type": "null"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "surname": {
+                    "type": "string"
+                  },
+                  "balans": {
+                    "type": "integer"
+                  },
+                  "tariff": {
+                    "type": "integer"
+                  },
+                  "tariff_autorenewal": {
+                    "type": "integer"
+                  },
+                  "lang": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  },
+                  "token": {
+                    "type": "string"
                   }
                 }
+              },
+              "x-examples": {
+                "example-1": [
+                  {
+                    "id": 10,
+                    "datetime_add": "2022-09-16T17:17:31.000Z",
+                    "social_identity": null,
+                    "status": 1,
+                    "avatar": null,
+                    "datetime_view": null,
+                    "name": "testName",
+                    "surname": "testSurname",
+                    "balans": 0,
+                    "tariff": 0,
+                    "tariff_autorenewal": 1,
+                    "lang": "ru",
+                    "city": "Сочи",
+                    "token": "yJlbWFpbCI6InRlc3QyQHRlc3QucnUifQ==e"
+                  }
+                ]
               }
             },
             "examples": {}
@@ -1391,22 +1440,62 @@
       "parameters": []
     },
     "/user/stat": {
-      "get": {
+      "parameters": [],
+      "post": {
+        "summary": "Получение статистики",
+        "operationId": "post-user-stat",
+        "responses": {
+          "200": {
+            "description": "ad_id при неообходимости выбрать статистику по объявлению",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "date": {
+                    "type": "string"
+                  },
+                  "ad_id": {
+                    "type": "integer"
+                  },
+                  "from_user_id": {
+                    "type": "integer"
+                  },
+                  "to_user_id": {
+                    "type": "integer"
+                  },
+                  "action": {
+                    "type": "string"
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": [
+                  {
+                    "id": 1,
+                    "date": "",
+                    "ad_id": 1,
+                    "from_user_id": 1,
+                    "to_user_id": 1,
+                    "action": ""
+                  }
+                ]
+              }
+            }
+          }
+        },
         "tags": [
           "user"
         ],
-        "summary": "Получение статистики",
         "description": "Получение баланса пользователя",
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
         "parameters": [
           {
             "type": "string",
             "in": "header",
-            "name": "token",
-            "description": "Токен пользователя"
+            "name": "token"
           },
           {
             "in": "body",
@@ -1426,79 +1515,8 @@
             },
             "description": "ad_id при неообходимости выбрать статистику по объявлению"
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "Удачное выполнение",
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "integer"
-                  },
-                  "balance": {
-                    "type": "integer"
-                  }
-                }
-              },
-              "x-examples": {
-                "example-1": [
-                  {
-                    "id": 2,
-                    "balance": 4400
-                  }
-                ]
-              }
-            }
-          },
-          "400": {
-            "description": "error operation",
-            "schema": {
-              "$ref": "#/definitions/ErrorResponse"
-            }
-          },
-          "": {
-            "description": "Возвращает массив ",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "integer"
-                },
-                "date": {
-                  "type": "string"
-                },
-                "ad_id": {
-                  "type": "integer"
-                },
-                "from_user_id": {
-                  "type": "integer"
-                },
-                "to_user_id": {
-                  "type": "integer"
-                },
-                "action": {
-                  "type": "string"
-                }
-              },
-              "x-examples": {
-                "example-1": {
-                  "id": 1,
-                  "date": "2022-04-03 20:34:51",
-                  "ad_id": 3,
-                  "from_user_id": 22,
-                  "to_user_id": 10,
-                  "action": "favorite"
-                }
-              }
-            }
-          }
-        },
-        "operationId": "user-stat"
-      },
-      "parameters": []
+        ]
+      }
     },
     "/user/edit": {
       "post": {
@@ -1519,6 +1537,16 @@
             "required": true,
             "schema": {
               "type": "object",
+              "x-examples": {
+                "example-1": {
+                  "email": "4@yandex.ru",
+                  "phone": "79996567081",
+                  "pass": "50415041",
+                  "data": {
+                    "name_company": "test_company"
+                  }
+                }
+              },
               "properties": {
                 "email": {
                   "type": "string"
@@ -1528,24 +1556,6 @@
                 },
                 "pass": {
                   "type": "string"
-                },
-                "data": {
-                  "type": "object",
-                  "properties": {
-                    "name_company": {
-                      "type": "string"
-                    }
-                  }
-                }
-              },
-              "x-examples": {
-                "example-1": {
-                  "email": "4@yandex.ru",
-                  "phone": "79996567081",
-                  "pass": "50415041",
-                  "data": {
-                    "name_company": "test_company"
-                  }
                 }
               }
             }
