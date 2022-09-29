@@ -43,7 +43,7 @@ exports.reg = (req, res) => {
                 1,
                 0,
                 user_hash,
-                req.body.leng,
+                req.body.leng ? req.body.leng : "ru",
               ];
               sql = `
                 INSERT INTO uni_clients(
