@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "711624089700",
+    "project_id": "crowdfaster-9a11a",
+    "storage_bucket": "crowdfaster-9a11a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:711624089700:android:7d21a25e175690d1af3f71",
+        "android_client_info": {
+          "package_name": "crowdfaster.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "711624089700-vgo891944ir7ddtss7e48924hbocg11n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAclfB7dlMJyZBxT51nl6Shj22t5wNtPg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "711624089700-vgo891944ir7ddtss7e48924hbocg11n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
