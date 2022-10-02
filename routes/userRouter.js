@@ -5,6 +5,7 @@ const User = require("../controllers/UserController.js");
 
 userRouter.get("/balance",Auth.authHeaderToken, User.user_balance);
 userRouter.post("/reg",  Auth.authHeader, User.reg);
+userRouter.post("/activate", Auth.authHeaderToken, User.activ);
 userRouter.post("/edit", Auth.authHeaderToken, User.user_edit);
 userRouter.post("/login", Auth.authHeader, User.user_get);
 userRouter.get("/getMagazin", Auth.authHeaderId, User.getMagazin);

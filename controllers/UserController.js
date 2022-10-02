@@ -40,6 +40,7 @@ try{
                 massage: "Не удалось создать hash пароля!",
                 debug: {},
               };
+              conn.end();
             res.status(500).json(resBody);
             }
           });
@@ -51,6 +52,7 @@ try{
             massage: "Не удалось создать hash пароля!",
             debug: {},
           };
+          conn.end();
         res.status(500).json(resBody);
         }
       });
@@ -61,6 +63,7 @@ try{
         massage: "Пользователь с таким email уже зарегистрирован!",
         debug: {},
       };
+      conn.end();
     res.status(401).json(resBody);
     }
   }else{
@@ -70,6 +73,7 @@ try{
         massage: "Empty email",
         debug: {},
       };
+    conn.end();
     res.status(401).json(resBody);
   }
 
@@ -125,18 +129,16 @@ try{
               ${code}
               )`;
               [rows,fields]=await conn.execute(sql);
-              
               await fn.sendMail("Andruxakonst@yandex.ru", "Код подтверждения", "Ваш код подтверждения "+code);
-
+              conn.end();
             res.json({ dataSend });
           } else {
             console.log("ERROR", err);
+            conn.end();
             res.status(500).json(err);
             
           }
   }
-
-
 }catch(error){
   console.log("Ошибка ", error);
   let resBody = {
@@ -149,10 +151,74 @@ try{
   };
   res.status(500).json(resBody);
 }
+}
+exports.activ = async (req, res)=>{
+  let user_id = req.body.user_id;
+  const conn = await mysql.createConnection(DB.config);
+  //получить email, найти по нему id юзера и в таблице сменить данные
+  try{
+    if(req.body.code){
+      let sql=`SELECT code, data_time FROM uni_userdata where user_id=${user_id}`;
+      [rows,fields]=await conn.execute(sql);
 
-  
+      if(rows.length>0){
+        let row = rows[0]
+        if(req.body.code === row.code){
+          //todo Проверить протухание кода
+          // let data_set = moment(row.data_time).add(1,'days');
+          // let now = moment();
+          // console.log(data_set, now)
+          // if(data_set.isAfter(now)){
+          //   console.log("Код протух");
+          // }else{
+          //   console.log("Код норм");
+          // }
+          sql =`UPDATE uni_clients set clients_status=1 WHERE clients_id=${user_id}`;
+          [rows,fields]=await conn.execute(sql);
+          res.json(row);
+        }else{
+          let resBody = {
+            status: "error",
+            id: -7,
+            massage: "Код введен не верно",
+            debug: {},
+          };
+          res.status(400).json(resBody);
+        }
+      }else{
+        let resBody = {
+          status: "error",
+          id: -7,
+          massage: "Пользователь с таким Email не найден",
+          debug: {},
+        };
+        res.status(400).json(resBody);
+      }
+    }else{
+      let resBody = {
+        status: "error",
+        id: -6,
+        massage: "Не передан code",
+        debug: {
+          "code":req.body.code,
+        },
+      };
+      res.status(400).json(resBody);
+    }
+  }catch(error){
+    console.log("Ошибка ", error);
+  let resBody = {
+    status: "error",
+    id: -6,
+    massage: "Непредвиденная ошибка",
+    debug: {
+      "error":error,
+    },
+  };
+  res.status(500).json(resBody);
+  }
+}
 
-};
 exports.isMagazin = (user_id) => {
   sql = `
     SELECT 
