@@ -135,6 +135,7 @@ async function sendPush(dev_id, title ,text){
       await firebase.messaging().sendToDevice(dev_id, payload, options);
 }
 exports.testPush = async (req, res)=>{
+        
         let dev_id = "qwri3bl3b543";
         //инициализация приложения
         firebase.initializeApp({
