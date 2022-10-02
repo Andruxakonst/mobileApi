@@ -4,89 +4,154 @@ const bcrypt = require("bcrypt");
 const crypto = require('crypto');
 const moment = require("moment");
 const User = require("./User");
-const { fn } = require("moment");
+const fn = require("./FnController");
 
-exports.reg = (req, res) => {
-  let sql = `
-    SELECT 
-        clients_id AS id,
-        clients_email AS email,
-        clients_status AS status,
-        clients_phone AS phone,
-        clients_lang AS lang
-    FROM
-        uni_clients
-    WHERE clients_email = "${req.body.email}"`;
-  DB.connection.query(sql, (err, results) => {
-    if (err) {
-      res.status(404).send(`Не удалось получить данные из базы. ${err} ${sql}`);
-    } else {
-      if (results < 1) {
-        bcrypt.genSalt(10, function (err, salt) {
-          bcrypt.hash(
-            req.body.pass + "2b041ac127efd8862025e026176713d3",
-            salt,
-            function (err, pass_hash) {
+exports.reg = async (req, res) => {
+try{
+  const conn = await mysql.createConnection(DB.config);
+  if(req.body.email && req.body.pass){
+    let sql = `
+      SELECT 
+          clients_id AS id,
+          clients_email AS email,
+          clients_status AS status,
+          clients_phone AS phone,
+          clients_lang AS lang
+      FROM
+          uni_clients
+      WHERE clients_email = "${req.body.email}"`;
+      let [rows,fields]=await conn.execute(sql);
+ 
+    if(rows < 1){
+      pass = req.body.pass + "2b041ac127efd8862025e026176713d3";
+      bcrypt.genSalt(10, (err, salt) =>{
+        if(!err){
+          bcrypt.hash(pass, salt,(err, pass_hash)=>{
+            if(!err){
               pass_hash = pass_hash.replace(/^\$2b(.+)$/i, "$2y$1");
               user_hash = crypto.createHash('md5').update(req.body.email).digest("hex");
-              let val = [
-                pass_hash,
-                req.body.email,
-                moment().format("YYYY-MM-DD HH:mm:ss"),
-                1,
-                req.body.phone,
-                req.body.name,
-                req.body.surname,
-                "user",
-                376,
-                1,
-                1,
-                0,
-                user_hash,
-                req.body.leng ? req.body.leng : "ru",
-              ];
-              sql = `
-                INSERT INTO uni_clients(
-                    clients_pass,
-                    clients_email,
-                    clients_datetime_add,
-                    clients_status,
-                    clients_phone,
-                    clients_name,
-                    clients_surname,
-                    clients_type_person,
-                    clients_city_id,
-                    clients_secure,
-                    clients_view_phone,
-                    clients_tariff_id,
-                    clients_id_hash,
-                    clients_lang
-                )
-                VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-                `;
-
-              DB.connection.query(sql, val, (err, results) => {
-                if (results) {
-                  let data = JSON.stringify({
-                    email: req.body.email,
-                    tel: req.body.phone,
-                  });
-                  let token = Buffer.from(data).toString("base64");
-                  results.token = token.slice(1) + token[0];
-                  res.json({ results });
-                } else {
-                  res.status(500).json(err);
-                  console.log("ERROR", err);
-                }
-              });
+              //сохраняем юзера
+              saveUser(pass_hash,user_hash);
+            }else{
+              console.log("Ошибка при создании hash пароля 2", err);
+              let resBody = {
+                status: "error",
+                id: -6,
+                massage: "Не удалось создать hash пароля!",
+                debug: {},
+              };
+            res.status(500).json(resBody);
             }
-          );
-        });
-      } else {
-        res.status(400).send(`Пользователь уже зарегистрировн!`);
-      }
+          });
+        }else{
+          console.log("Ошибка при создании hash пароля", err);
+          let resBody = {
+            status: "error",
+            id: -6,
+            massage: "Не удалось создать hash пароля!",
+            debug: {},
+          };
+        res.status(500).json(resBody);
+        }
+      });
+    }else {
+      let resBody = {
+        status: "error",
+        id: -6,
+        massage: "Пользователь с таким email уже зарегистрирован!",
+        debug: {},
+      };
+    res.status(401).json(resBody);
     }
-  });
+  }else{
+    let resBody = {
+        status: "error",
+        id: -6,
+        massage: "Empty email",
+        debug: {},
+      };
+    res.status(401).json(resBody);
+  }
+
+  async function  saveUser(pass_hash,user_hash){
+    sql = `
+            INSERT INTO uni_clients(
+                clients_pass,
+                clients_email,
+                clients_datetime_add,
+                clients_status,
+                clients_phone,
+                clients_name,
+                clients_surname,
+                clients_type_person,
+                clients_city_id,
+                clients_secure,
+                clients_view_phone,
+                clients_tariff_id,
+                clients_id_hash,
+                clients_lang
+            )
+            VALUES(
+              "${pass_hash}",
+              "${req.body.email}",
+              "${moment().format("YYYY-MM-DD HH:mm:ss")}",
+              0,
+              "${req.body.phone}",
+              "${req.body.name}",
+              "${req.body.surname}",
+              "user",
+              ${req.body.city_id ? req.body.city_id : 376},
+              1,
+              1,
+              0,
+              "${user_hash}",
+              "${req.body.leng ? req.body.leng : 'ru'}")
+            `;
+          [rows,fields]=await conn.execute(sql);
+          if(rows) {
+            let data = JSON.stringify({
+              email: req.body.email,
+              tel: req.body.phone,
+            });
+            let dataSend={};
+            let token = Buffer.from(data).toString("base64");
+            dataSend.token = token.slice(1) + token[0];
+            dataSend.user_id = rows.insertId;
+            //сформировать рандом и от 0000 до 9999 и записать 
+            let code = Math.floor(0000 + Math.random() * 9999);
+            sql = `INSERT INTO uni_userdata(user_id, data_time, code) VALUE(
+              ${dataSend.user_id},
+              "${moment().format("YYYY-MM-DD HH:mm:ss")}",
+              ${code}
+              )`;
+              [rows,fields]=await conn.execute(sql);
+              
+              await fn.sendMail("Andruxakonst@yandex.ru", "Код подтверждения", "Ваш код подтверждения "+code);
+
+            res.json({ dataSend });
+          } else {
+            console.log("ERROR", err);
+            res.status(500).json(err);
+            
+          }
+  }
+
+
+}catch(error){
+  console.log("Ошибка ", error);
+  let resBody = {
+    status: "error",
+    id: -6,
+    massage: error,
+    debug: {
+      "sql-err":error,
+    },
+  };
+  res.status(500).json(resBody);
+}
+
+  
+
 };
 exports.isMagazin = (user_id) => {
   sql = `

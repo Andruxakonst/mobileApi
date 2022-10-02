@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 const fs = require('fs').promises;
 var moment = require('moment');
+const nodemailer = require('nodemailer');
 
 exports.encrypt = async (plaintext)=>{
     const params = new URLSearchParams();
@@ -36,6 +37,33 @@ exports.fileSave = async (files)=>{
     } catch (error) {
         console.log(error)
         return error;
+    }
+}
+
+exports.sendMail = async (email, subject, text, html ='')=>{
+    try{
+        let transporter = nodemailer.createTransport({
+            host: 'mail.crowdfaster.com',
+            port: 465,
+            secure: true,
+            auth: {
+              user: "no-reply@crowdfaster.com",
+              pass: "1}A6#VK5(kb,",
+            },
+        })
+        
+        let result = await transporter.sendMail({
+            from: '"Код подтверждения" <no-reply@crowdfaster.com>',
+            to: email,
+            subject: subject,
+            text: text,
+            html: html,
+        })
+        
+        return await result;
+    }catch(err){
+        console.log(err);
+        return false;
     }
 }
 

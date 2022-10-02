@@ -1,4 +1,6 @@
 const DB = require("./DbController.js");
+const nodemailer = require('nodemailer');
+
 exports.country = (req,res)=>{
     let id='';
     if(req.query && 'id' in req.query && req.query.id != ''){
