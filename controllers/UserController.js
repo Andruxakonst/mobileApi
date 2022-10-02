@@ -129,7 +129,7 @@ try{
               ${code}
               )`;
               [rows,fields]=await conn.execute(sql);
-              await fn.sendMail("Andruxakonst@yandex.ru", "Код подтверждения", "Ваш код подтверждения "+code);
+              await fn.sendMail(req.body.email, "Код подтверждения", "Ваш код подтверждения "+code);
               conn.end();
             res.json({ dataSend });
           } else {
