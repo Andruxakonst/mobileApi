@@ -17,5 +17,6 @@ userRouter.post("/add_review", Auth.authHeaderToken, User.add_review);
 userRouter.post("/my_review", Auth.authHeaderToken, User.my_review);
 userRouter.post("/del", Auth.authHeaderToken, User.del);
 userRouter.post("/stat", Auth.authHeaderToken, User.stat);
+userRouter.post("/set_push_id", Auth.authHeaderToken, User.setPushId);
 
 module.exports = userRouter;

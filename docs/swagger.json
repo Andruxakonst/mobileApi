@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "API for Umi CMS.",
-    "version": "1.0.1",
-    "title": "API for Uni CMS"
+    "description": "API crowdfaster CMS.",
+    "version": "1.0.2",
+    "title": "API crowdfaster CMS"
   },
   "host": "api.crowdfaster.com",
   "basePath": "/",
@@ -14,7 +14,7 @@
     "/chat/init": {
       "post": {
         "summary": "Инициализация чата",
-        "description": "Инициализация нового чата по объявлению",
+        "description": "Инициализация нового чата по объявлению.\nСоздает новый чат для переписки по объявления. Если чата ранее небыло, то верент сгенерированный hash чата, если переписка была - вернер переписку и hash чата.",
         "produces": [
           "application/xml",
           "application/json"
@@ -47,7 +47,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Удачное выполнение. Получает переписку или hash если переписки еще небыло",
+            "description": "Удачное выполнение. Получает перепискуи hash чата или hash чата если переписки еще небыло.",
             "schema": {
               "type": "array",
               "items": {
@@ -125,7 +125,30 @@
           "400": {
             "description": "error operation",
             "schema": {
-              "$ref": "#/definitions/ErrorResponse"
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -7,
+                  "massage": "Код введен не верно",
+                  "debug": {}
+                }
+              }
             }
           },
           "": {
@@ -243,7 +266,30 @@
           "400": {
             "description": "error operation",
             "schema": {
-              "$ref": "#/definitions/ErrorResponse"
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -7,
+                  "massage": "Код введен не верно",
+                  "debug": {}
+                }
+              }
             }
           },
           "": {
@@ -454,7 +500,30 @@
           "400": {
             "description": "error operation",
             "schema": {
-              "$ref": "#/definitions/ErrorResponse"
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -7,
+                  "massage": "Код введен не верно",
+                  "debug": {}
+                }
+              }
             }
           },
           "": {
@@ -576,7 +645,30 @@
           "400": {
             "description": "error operation",
             "schema": {
-              "$ref": "#/definitions/ErrorResponse"
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -7,
+                  "massage": "Код введен не верно",
+                  "debug": {}
+                }
+              }
             }
           },
           "": {
@@ -688,7 +780,30 @@
           "400": {
             "description": "error operation",
             "schema": {
-              "$ref": "#/definitions/ErrorResponse"
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -7,
+                  "massage": "Код введен не верно",
+                  "debug": {}
+                }
+              }
             }
           },
           "": {
@@ -798,7 +913,30 @@
           "400": {
             "description": "error operation",
             "schema": {
-              "$ref": "#/definitions/ErrorResponse"
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -7,
+                  "massage": "Код введен не верно",
+                  "debug": {}
+                }
+              }
             }
           },
           "": {
@@ -956,7 +1094,30 @@
           "400": {
             "description": "error operation",
             "schema": {
-              "$ref": "#/definitions/ErrorResponse"
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -7,
+                  "massage": "Код введен не верно",
+                  "debug": {}
+                }
+              }
             }
           },
           "": {
@@ -1101,7 +1262,30 @@
           "400": {
             "description": "error operation",
             "schema": {
-              "$ref": "#/definitions/ErrorResponse"
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -7,
+                  "massage": "Код введен не верно",
+                  "debug": {}
+                }
+              }
             }
           },
           "": {
@@ -1170,6 +1354,9 @@
                 },
                 " lang": {
                   "type": "string"
+                },
+                " city_id": {
+                  "type": "integer"
                 }
               }
             },
@@ -1228,7 +1415,30 @@
           "400": {
             "description": "error operation",
             "schema": {
-              "$ref": "#/definitions/ErrorResponse"
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -7,
+                  "massage": "Код введен не верно",
+                  "debug": {}
+                }
+              }
             }
           },
           "": {
@@ -1333,7 +1543,30 @@
           "400": {
             "description": "error operation",
             "schema": {
-              "$ref": "#/definitions/ErrorResponse"
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -7,
+                  "massage": "Код введен не верно",
+                  "debug": {}
+                }
+              }
             }
           }
         },
@@ -1431,7 +1664,30 @@
           "400": {
             "description": "error operation",
             "schema": {
-              "$ref": "#/definitions/ErrorResponse"
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -7,
+                  "massage": "Код введен не верно",
+                  "debug": {}
+                }
+              }
             }
           }
         },
@@ -1485,6 +1741,35 @@
                 ]
               }
             }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -7,
+                  "massage": "Код введен не верно",
+                  "debug": {}
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -1514,6 +1799,286 @@
               }
             },
             "description": "ad_id при неообходимости выбрать статистику по объявлению"
+          }
+        ]
+      }
+    },
+    "/user/activate": {
+      "parameters": [],
+      "post": {
+        "summary": "Активация учетной записи кодом из email",
+        "operationId": "post-user-activate",
+        "responses": {
+          "200": {
+            "description": "ad_id при неообходимости выбрать статистику по объявлению",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "date": {
+                    "type": "string"
+                  },
+                  "ad_id": {
+                    "type": "integer"
+                  },
+                  "from_user_id": {
+                    "type": "integer"
+                  },
+                  "to_user_id": {
+                    "type": "integer"
+                  },
+                  "action": {
+                    "type": "string"
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": [
+                  {
+                    "id": 1,
+                    "date": "",
+                    "ad_id": 1,
+                    "from_user_id": 1,
+                    "to_user_id": 1,
+                    "action": ""
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "При ошибке",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -7,
+                  "massage": "Код введен не верно",
+                  "debug": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "При ошибке на стороне сервера",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -7,
+                  "massage": "Код введен не верно",
+                  "debug": {}
+                }
+              }
+            }
+          },
+          "": {
+            "description": "При успехе возвращается code и data_time"
+          }
+        },
+        "tags": [
+          "user"
+        ],
+        "description": "Активация учетной записи кодом из email",
+        "parameters": [
+          {
+            "type": "string",
+            "in": "header",
+            "name": "token"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "code": 9970
+                }
+              }
+            },
+            "description": "Для активации учетной записи необхдимо передать параметр code"
+          }
+        ]
+      }
+    },
+    "/user/set_push_id": {
+      "parameters": [],
+      "post": {
+        "summary": "Установка идентификатора устройства для PUSH уведомлений",
+        "operationId": "post-user-activate",
+        "responses": {
+          "200": {
+            "description": "ad_id при неообходимости выбрать статистику по объявлению",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "date": {
+                    "type": "string"
+                  },
+                  "ad_id": {
+                    "type": "integer"
+                  },
+                  "from_user_id": {
+                    "type": "integer"
+                  },
+                  "to_user_id": {
+                    "type": "integer"
+                  },
+                  "action": {
+                    "type": "string"
+                  }
+                }
+              },
+              "x-examples": {
+                "example-1": [
+                  {
+                    "id": 1,
+                    "date": "",
+                    "ad_id": 1,
+                    "from_user_id": 1,
+                    "to_user_id": 1,
+                    "action": ""
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "При ошибке",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -7,
+                  "massage": "Код введен не верно",
+                  "debug": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "При ошибке на стороне сервера",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -7,
+                  "massage": "Код введен не верно",
+                  "debug": {}
+                }
+              }
+            }
+          },
+          "": {
+            "description": "При успехе возвращается строка ADDED или APDATED"
+          }
+        },
+        "tags": [
+          "user"
+        ],
+        "description": "Активация учетной записи кодом из email",
+        "parameters": [
+          {
+            "type": "string",
+            "in": "header",
+            "name": "token"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "push_id": {
+                  "type": "string"
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "push_id": "2222"
+                }
+              }
+            },
+            "description": "Для идентификатора устройства необхдимо передать параметр push_id"
           }
         ]
       }
@@ -1588,7 +2153,30 @@
           "400": {
             "description": "error operation",
             "schema": {
-              "$ref": "#/definitions/ErrorResponse"
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -7,
+                  "massage": "Код введен не верно",
+                  "debug": {}
+                }
+              }
             }
           }
         },
@@ -1655,7 +2243,30 @@
           "400": {
             "description": "error operation",
             "schema": {
-              "$ref": "#/definitions/ErrorResponse"
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "massage": {
+                  "type": "string"
+                },
+                "debug": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "x-examples": {
+                "example-1": {
+                  "status": "error",
+                  "id": -7,
+                  "massage": "Код введен не верно",
+                  "debug": {}
+                }
+              }
             }
           }
         },
@@ -11705,18 +12316,26 @@
     "ErrorResponse": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int32"
-        },
         "status": {
           "type": "string"
         },
-        "message": {
+        "id": {
+          "type": "integer"
+        },
+        "massage": {
           "type": "string"
         },
         "debug": {
-          "type": "object"
+          "type": "object",
+          "properties": {}
+        }
+      },
+      "x-examples": {
+        "example-1": {
+          "status": "error",
+          "id": -7,
+          "massage": "Код введен не верно",
+          "debug": {}
         }
       }
     }

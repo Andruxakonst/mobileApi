@@ -305,7 +305,7 @@ exports.user_get = (req, res) => {
       sql1 += `clients_email = "${req.body.email}"`;
     }
     DB.connection.query(sql1, (err, results) => {
-      if (results) {
+      if (results.length>0) {
         user_id = results[0].id;
         let hash = results[0].pass;
         hash = hash.replace(/^\$2y(.+)$/i, "$2a$1");
@@ -854,4 +854,45 @@ async function stat(id_ad,from_user_id,to_user_id, action){
     let [rows,fields]= await conn.execute(sql);
   }
   conn.end();
+}
+exports.setPushId = async (req,res)=>{
+  let user_id = req.body.user_id;
+  try {
+    let push_id = req.body.push_id;
+    if(push_id){
+      const conn = await mysql.createConnection(DB.config);
+      let sql = `select * from uni_userdata where user_id="${user_id}"`;
+      let [rows,fields]= await conn.execute(sql);
+      if(rows.length>0){
+        let sql = `UPDATE uni_userdata SET dev_id = "${push_id}" where user_id="${user_id}"`;
+        let [rows,fields]= await conn.execute(sql);
+        res.send("UPDATED");
+      }else{
+        let sql = `INSERT INTO uni_userdata(user_id,data_time,dev_id)VALUES(${user_id},"${moment().format("YYYY-MM-DD HH:mm:ss")}","${push_id}")`;
+        let [rows,fields]= await conn.execute(sql);
+        res.send("ADDED");
+      }
+    }else{
+        let resBody = {
+          status: "error",
+          id: -17,
+          massage: "Не найдено поле идентификатора устройства.",
+          debug: {
+            "push_id": push_id,
+          },
+        };
+        res.status(500).json(resBody);
+    }
+  } catch (error) {
+    console.log(error)
+    let resBody = {
+      status: "error",
+      id: -17,
+      massage: "Непредвиденная ошибка.",
+      debug: {
+        "error": error,
+      },
+    };
+    res.status(500).json(resBody);
+  }
 }
