@@ -38,7 +38,26 @@ exports.passUserRecover = async (req, res) => {
                 WHERE clients_id = ${user_id}`;
                 let [rows,fields]=await conn.execute(sql);
                 if(rows.affectedRows > 0){
-                  res.send("Пароль сохранен. Активийте посторно учетную запись");
+                  let data = JSON.stringify({
+                    email: req.body.email,
+                    tel: req.body.phone,
+                  });
+                  let dataSend={};
+                  let token = Buffer.from(data).toString("base64");
+                  dataSend.token = token.slice(1) + token[0];
+                  dataSend.user_id = user_id;
+                  dataSend.text = "После смены пароля необходимо повторно активировать пользователя. На Ваш Email был отправлен код подтверждения!";
+                  //сформировать рандом и от 0000 до 9999 и записать 
+                  let code = Math.floor(0000 + Math.random() * 9999);
+                  sql = `INSERT INTO uni_userdata(user_id, data_time, code) VALUE(
+                    ${dataSend.user_id},
+                    "${moment().format("YYYY-MM-DD HH:mm:ss")}",
+                    ${code}
+                    )`;
+                    [rows,fields]=await conn.execute(sql);
+                    await fn.sendMail(req.body.email, "Код для восстановления пароля", "Ваш код подтверждения "+code);
+                    conn.end();
+                  res.json({ dataSend });
                 }
                 
               }else{

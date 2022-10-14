@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const port = 80
+const port = 8080
 const bodyParser = require('body-parser');
 const mainRouter = require("./routes/mainRouter.js");
 const fn = require("./controllers/FnController.js");

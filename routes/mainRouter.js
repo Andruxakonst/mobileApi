@@ -9,9 +9,10 @@ const userRouter = require("./userRouter.js");
 const directRouter = require("./directRouter.js");
 
 const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('../docs/swagger.json');
+const swaggerDoc = require('../docs/swagger.json');
 
-mainRouter.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+mainRouter.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
+
 mainRouter.use("/ads", adsRouter);
 mainRouter.use("/user", userRouter);
 mainRouter.use("/chat", Auth.authHeaderToken, chatRouter);
