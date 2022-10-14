@@ -1,6 +1,5 @@
 const express = require('express')
 const app = express()
-const request = require('request')
 const port = 80
 const bodyParser = require('body-parser');
 const mainRouter = require("./routes/mainRouter.js");
@@ -12,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use('/', mainRouter);
 app.get('/push', fn.testPush);
 app.listen(port, () => {
-  console.log(`API listening on port ${port}`);
+  console.log(`API listening on port ${port} process.version : ${process.version}`);
   fn.massLoop();
 });
 

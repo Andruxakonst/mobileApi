@@ -6,6 +6,99 @@ const moment = require("moment");
 const User = require("./User");
 const fn = require("./FnController");
 
+
+exports.passUserRecover = async (req, res) => {
+  try {
+    const conn = await mysql.createConnection(DB.config);
+    if(req.body.email && req.body.pass){
+      let sql = `
+        SELECT 
+            clients_id AS id,
+            clients_email AS email,
+            clients_status AS status,
+            clients_phone AS phone,
+            clients_lang AS lang
+        FROM
+            uni_clients
+        WHERE clients_email = "${req.body.email}"`;
+      let [rows,fields]=await conn.execute(sql);
+      if(rows.length>0){
+        let user_id = rows[0].id;
+        pass = req.body.pass + "2b041ac127efd8862025e026176713d3";
+        bcrypt.genSalt(10, (err, salt) =>{
+          if(!err){
+            bcrypt.hash(pass, salt, async (err, pass_hash)=>{
+              if(!err){
+                pass_hash = pass_hash.replace(/^\$2b(.+)$/i, "$2y$1");
+                user_hash = crypto.createHash('md5').update(req.body.email).digest("hex");
+                //сохраняем новый пароль юзера
+                let sql = `
+                UPDATE uni_clients
+                SET clients_status = 0
+                WHERE clients_id = ${user_id}`;
+                let [rows,fields]=await conn.execute(sql);
+                if(rows.affectedRows > 0){
+                  res.send("Пароль сохранен. Активийте посторно учетную запись");
+                }
+                
+              }else{
+                console.log("Ошибка при создании hash пароля 2", err);
+                let resBody = {
+                  status: "error",
+                  id: -6,
+                  massage: "Не удалось создать hash пароля!",
+                  debug: {},
+                };
+                conn.end();
+              res.status(500).json(resBody);
+              }
+            });
+          }else{
+            console.log("Ошибка при создании hash пароля", err);
+            let resBody = {
+              status: "error",
+              id: -6,
+              massage: "Не удалось создать hash пароля!",
+              debug: {},
+            };
+            conn.end();
+          res.status(500).json(resBody);
+          }
+        });
+      }else{
+        let resBody = {
+          status: "error",
+          id: -20,
+          massage: "Пользователь с таким Email не найден",
+          debug: {},
+        };
+      conn.end();
+      res.status(401).json(resBody);
+      }
+    }else{
+      let resBody = {
+          status: "error",
+          id: -6,
+          massage: "Empty email",
+          debug: {},
+        };
+      conn.end();
+      res.status(401).json(resBody);
+    }
+  } catch (error) {
+  console.log("Ошибка ", error);
+  let resBody = {
+    status: "error",
+    id: -6,
+    massage: error,
+    debug: {
+      "sql-err":error,
+    },
+  }
+  res.status(500).json(resBody);
+}
+}
+
 exports.reg = async (req, res) => {
 try{
   const conn = await mysql.createConnection(DB.config);
