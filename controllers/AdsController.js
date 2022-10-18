@@ -7,7 +7,7 @@ const fn = require("./FnController");
 exports.create = async (req,res)=>{
   let user_id = req.body.user_id;
   const conn = await mysql.createConnection(DB.config);
-  if(req.files.length >0){
+  if(req.files.length >0 && req.files.length <=10){
     let {title, text, id_cat, price, address, city_id, region_id, country_id, currency ,tags} = req.body;
 
     if(title !="undefined"&& 
@@ -77,85 +77,206 @@ exports.create = async (req,res)=>{
       res.status(400).send('Недостаточно входных данных');
     }
   }else{
-    res.send('нет изображений для загрузки');
+    if(req.files.length > 10){
+      res.send('максимально 10 изображений!');
+    }else{
+      res.send('нет изображений для загрузки');
+    }
   }
 }
 
 exports.update = async (req,res)=>{
   let user_id = req.body.user_id;
   const conn = await mysql.createConnection(DB.config);
-  if(req.files.length >0){
+  if(req.files.length >0 && req.files.length <= 10){
     let {ads_id, title, text, id_cat, price, address, city_id, region_id, country_id, currency ,tags} = req.body;
-
-    if(title !="undefined"&& 
-        text !="undefined"&& 
-        id_cat !="undefined"&& 
-        price !="undefined"&& 
-        address !="undefined"&& 
-        city_id !="undefined"&& 
-        region_id !="undefined"&& 
-        country_id !="undefined"&& 
-        currency !="undefined" &&
-        ads_id !="undefined"
-        ){
-        try {
-          let fileSaves = await fn.fileSave(req.files);
-        if(!('err' in fileSaves)){
-          let val =[
-              title,
-              fn.translit(title),
-              text,
-              id_cat,
-              user_id,
-              JSON.stringify(fileSaves),
-              price,
-              address,
-              moment().add(30, 'days').format('YYYY-MM-DD HH:mm:ss'),
-              city_id,
-              5,
-              region_id,
-              country_id,
-              currency,
-              30,
-              tags,
-              0,
-              moment().format('YYYY-MM-DD HH:mm:ss'),
-              ads_id
-            ];
-            let sql = `
-              update uni_ads set
-                ads_title =?,
-                ads_alias =?,
-                ads_text =?,
-                ads_id_cat =?,
-                ads_id_user =?,
-                ads_images =?,
-                ads_price =?,
-                ads_address =?,
-                ads_period_publication =?,
-                ads_city_id =?,
-                ads_status =?,
-                ads_region_id =?,
-                ads_country_id =?,
-                ads_currency =?,
-                ads_period_day =?,
-                ads_filter_tags =?,
-                ads_available_unlimitedly =?,
-                ads_datetime_add =?
-              where ads_id = ?`;
-            let [rows,fields]= await conn.execute(sql,val);
-            res.json('Updated');
-          }else{
-            res.status(500),json(fileSaves);
+    //проверка что объявление данного юзера
+    let sql =`SELECT ads_id, ads_id_user FROM uni_ads WHERE ads_id_user = ${user_id}`;
+    let [rows,fields]= await conn.execute(sql);
+    if(rows.length>0){
+      if(title !="undefined"&& 
+          text !="undefined"&& 
+          id_cat !="undefined"&& 
+          price !="undefined"&& 
+          address !="undefined"&& 
+          city_id !="undefined"&& 
+          region_id !="undefined"&& 
+          country_id !="undefined"&& 
+          currency !="undefined" &&
+          ads_id !="undefined"
+          ){
+          try {
+            let fileSaves = await fn.fileSave(req.files);
+          if(!('err' in fileSaves)){
+            let val =[
+                title,
+                fn.translit(title),
+                text,
+                id_cat,
+                user_id,
+                JSON.stringify(fileSaves),
+                price,
+                address,
+                moment().add(30, 'days').format('YYYY-MM-DD HH:mm:ss'),
+                city_id,
+                5,
+                region_id,
+                country_id,
+                currency,
+                30,
+                tags,
+                0,
+                moment().format('YYYY-MM-DD HH:mm:ss'),
+                ads_id
+              ];
+              let sql = `
+                update uni_ads set
+                  ads_title =?,
+                  ads_alias =?,
+                  ads_text =?,
+                  ads_id_cat =?,
+                  ads_id_user =?,
+                  ads_images =?,
+                  ads_price =?,
+                  ads_address =?,
+                  ads_period_publication =?,
+                  ads_city_id =?,
+                  ads_status =?,
+                  ads_region_id =?,
+                  ads_country_id =?,
+                  ads_currency =?,
+                  ads_period_day =?,
+                  ads_filter_tags =?,
+                  ads_available_unlimitedly =?,
+                  ads_datetime_add =?
+                where ads_id = ?`;
+              let [rows,fields]= await conn.execute(sql,val);
+              res.json('Updated');
+            }else{
+              res.status(500),json(fileSaves);
+            }
+          } catch (error) {
+            console.log('error',error)
           }
-        } catch (error) {
-          console.log('error',error)
-        }
+      }else{
+        res.status(400).send('Недостаточно входных данных');
+      }
     }else{
-      res.status(400).send('Недостаточно входных данных');
+      res.status(400).send('Обявления у пользователя не найдено!');
     }
   }else{
-    res.send('нет изображений для загрузки');
+    if(req.files.length > 10){
+      res.send('максимально 10 изображений!');
+    }else{
+      res.send('нет изображений для загрузки');
+    }
+  }
+}
+exports.dell = async (req,res)=>{
+  let user_id = req.body.user_id;
+  try {
+    const conn = await mysql.createConnection(DB.config);
+    let {ads_id} = req.body;
+    if(ads_id  !="undefined"){
+      let sql =`SELECT ads_id, ads_id_user FROM uni_ads WHERE ads_id_user = ${user_id}`;
+      let [rows,fields]= await conn.execute(sql);
+      if(rows.length>0){
+        let sql =`
+          DELETE FROM uni_ads WHERE ads_id = ${ads_id} 
+        `;
+        let [rows,fields]= await conn.execute(sql);
+        if (rows){
+          res.send('Удалено');
+        }
+      }else{
+        conn.end();
+      let resBody = {
+        "status": "error",
+        "id": -17,
+        "massage":"У пользователя не найдено такого объявления",
+        "debug":{}
+      }
+      res.status(401).json(resBody);
+      }
+    }else{
+      conn.end();
+      let resBody = {
+        "status": "error",
+        "id": -17,
+        "massage":"Не найден параметр ads_id",
+        "debug":{
+            "ads_id type": typeof ads_id,
+            "ads_id":ads_id,
+        }
+      }
+      res.status(401).json(resBody);
+      conn.end();
+    }
+  } catch (error) {
+
+    let resBody = {
+      "status": "error",
+      "id": -99,
+      "massage":"Неизвестная ошибка",
+      "debug":{
+          "error":error,
+      }
+    }
+    res.status(401).json(resBody);
+  }
+};
+
+exports.un_pablic = async (req,res)=>{
+  let user_id = req.body.user_id;
+  try {
+    const conn = await mysql.createConnection(DB.config);
+    let ads_id = req.body.ads_id;
+    
+    if(ads_id  !="undefined"){
+      let sql =`SELECT ads_id, ads_id_user FROM uni_ads WHERE ads_id_user = ${user_id}`;
+      let [rows,fields]= await conn.execute(sql);
+      if(rows.length>0){
+        let sql =`
+          UPDATE uni_ads SET ads_status = 0 WHERE ads_id = ${ads_id} 
+        `;
+        let [rows,fields]= await conn.execute(sql);
+        if (rows){
+          res.send('Снято с публикации');
+        }
+      }else{
+        conn.end();
+      let resBody = {
+        "status": "error",
+        "id": -17,
+        "massage":"У пользователя не найдено такого объявления",
+        "debug":{}
+      }
+      res.status(401).json(resBody);
+      }
+    }else{
+      conn.end();
+      let resBody = {
+        "status": "error",
+        "id": -17,
+        "massage":"Не найден параметр ads_id",
+        "debug":{
+            "ads_id type": typeof ads_id,
+            "ads_id":ads_id,
+        }
+      }
+      res.status(401).json(resBody);
+      conn.end();
+    }
+  } catch (error) {
+    let resBody = {
+      "status": "error",
+      "id": -99,
+      "massage":"Неизвестная ошибка",
+      "debug":{
+          "error":error,
+      }
+    }
+    res.status(401).json(resBody);
   }
 }
 
@@ -277,7 +398,16 @@ exports.list = (req,res)=>{
     }
     let sql = `
     SELECT 
-      a.*,
+      a.ads_id as id,
+      a.ads_title as title,
+      a.ads_text as text,
+      a.ads_id_cat as id_cat,
+      a.ads_datetime_add as datetime_add,
+      a.ads_images as images,
+      a.ads_count_display as count_display,
+      a.ads_currency as currency,
+      a.ads_sorting as sorting,
+      a.ads_filter_tags as filter_tags,
       country.country_name,
       reg.region_name,
       city.city_name,
@@ -300,10 +430,24 @@ exports.list = (req,res)=>{
       a.ads_region_id = reg.region_id
       AND
       a.ads_country_id = country.country_id
-      ${id}
-  ORDER BY
-      a.ads_id
-  `;
+      `;
+  if(req.body && typeof req.body.find != 'undefined'){
+    sql +=` AND
+    a.ads_title LIKE '%${req.body.find}%' 
+    `;
+  }
+  if(req.body && typeof req.body.category != 'undefined'){
+    sql +=` AND
+    a.ads_id_cat = ${req.body.category} 
+    `;
+  }
+  if(req.body && typeof req.body.id != 'undefined'){
+    sql +=` AND
+    a.ads_id = ${req.body.id} 
+    `;
+  }
+  sql +=` ORDER BY a.ads_id `;
+
   if(req.body){
     if(typeof req.body.limit != 'undefined'){
       sql += `LIMIT ${req.body.limit}`;
@@ -317,6 +461,7 @@ exports.list = (req,res)=>{
       sql += `OFFSET 0`;
     }
   }
+
   DB.connection.query(sql,
   (err, results)=>{
     if(err){
@@ -324,11 +469,12 @@ exports.list = (req,res)=>{
     }else{
       
       for(let ads = 0; ads<results.length; ads++){
-        let images = JSON.parse(results[ads].ads_images);
+        let images = JSON.parse(results[ads].images);
         for(let img = 0; img<images.length; img++){
           images[img] = url+images[img];
         }
-        results[ads].ads_images = JSON.stringify(images);
+        
+        results[ads].images = images;
       }
 
       res.json(results);

@@ -234,6 +234,7 @@ exports.authHeaderToken = (req,res,next)=>{
                     let sql = `
                     SELECT 
                         clients_id AS id,
+                        clients_status AS status,
                         clients_email AS email,
                         clients_tariff_id AS tarif,
                         clients_status AS status 
@@ -260,11 +261,28 @@ exports.authHeaderToken = (req,res,next)=>{
                             res.status(400).json(resBody);
 
                         }else{
-                            delete req.body.token;
-                            req.body.user_id = results[0].id;
-                            req.body.email = text.email;
-                            req.body.tel = text.tel;
-                            next();
+                            if(results.length>0 && (results[0].status >0 || req.body.code)){
+                                delete req.body.token;
+                                req.body.user_id = results[0].id;
+                                req.body.email = text.email;
+                                req.body.tel = text.tel;
+                                next();
+                            }else{
+                                let resBody = {
+                                    "status": "error",
+                                    "id": -5,
+                                    "massage":"Пользователь не активирован.",
+                                    "debug":{
+                                        "email":req.body.email,
+                                        "tel":req.body.tel
+                                    }
+                                }
+                                if(results.length <1){
+                                    resBody.massage ="Пользователь не найден.";
+                                }
+                                res.status(404).json(resBody);
+                            }
+                            
                         }
                     });
             }else{

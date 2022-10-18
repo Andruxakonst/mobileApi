@@ -19,5 +19,6 @@ userRouter.post("/del", Auth.authHeaderToken, User.del);
 userRouter.post("/stat", Auth.authHeaderToken, User.stat);
 userRouter.post("/set_push_id", Auth.authHeaderToken, User.setPushId);
 userRouter.post("/pass_recover", Auth.authHeader, User.passUserRecover);
+userRouter.post("/get_user", Auth.authHeader, User.get_user);
 
 module.exports = userRouter;

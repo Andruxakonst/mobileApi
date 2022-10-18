@@ -15,4 +15,7 @@ adsRouter.post("/up", Auth.authHeaderToken, Auth.auth, Ads.up);
 adsRouter.post("/turbo",Auth.authHeaderToken, Auth.auth, Ads.turbo);
 adsRouter.get("/category", Auth.authHeader, Ads.category);
 
+adsRouter.post("/dell", Auth.authHeaderToken, Auth.auth, Ads.dell);
+adsRouter.post("/unPablic", Auth.authHeaderToken, Auth.auth, Ads.un_pablic);
+
 module.exports = adsRouter;

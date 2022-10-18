@@ -49,15 +49,17 @@ exports.passUserRecover = async (req, res) => {
                   dataSend.text = "После смены пароля необходимо повторно активировать пользователя. На Ваш Email был отправлен код подтверждения!";
                   //сформировать рандом и от 0000 до 9999 и записать 
                   let code = Math.floor(0000 + Math.random() * 9999);
-                  sql = `INSERT INTO uni_userdata(user_id, data_time, code) VALUE(
-                    ${dataSend.user_id},
-                    "${moment().format("YYYY-MM-DD HH:mm:ss")}",
-                    ${code}
-                    )`;
-                    [rows,fields]=await conn.execute(sql);
-                    await fn.sendMail(req.body.email, "Код для восстановления пароля", "Ваш код подтверждения "+code);
-                    conn.end();
-                  res.json({ dataSend });
+                  sql = `UPDATE uni_userdata 
+                  SET 
+                  code = ${code},
+                  data_time = "${moment().format("YYYY-MM-DD HH:mm:ss")}"
+                  WHERE 
+                  user_id = ${dataSend.user_id}
+                  `;
+                  [rows,fields]=await conn.execute(sql);
+                  await fn.sendMail(req.body.email, "Код для восстановления пароля", "Ваш код подтверждения "+code);
+                  conn.end();
+                  res.json(dataSend);
                 }
                 
               }else{
@@ -532,14 +534,19 @@ exports.user_get = (req, res) => {
     res.status(401).json(resBody);
   }
 };
+
 exports.user_edit = (req, res) => {
+  let user_id = req.body.user_id;
   let data = req.body;
-  
   let keys = [];
   let values = [];
   let val = new Map(Object.entries(data));
   for (let key of val.keys()) {
-    keys.push("clients_" + key + "=?");
+    if(key != "user_id" && key != "tel" && key != "email"){
+      if(key == "phone" || key == "name"  || key == "surname"  || key == "name_company" ||  key == "city_id" || key == "lang"){
+        keys.push("clients_" + key + "=?");
+      }
+    }
   }
   for (let value of val.values()) {
     values.push(value);
@@ -547,12 +554,7 @@ exports.user_edit = (req, res) => {
   let sql = `UPDATE uni_clients
         SET 
         ${keys.join(", ")}
-        WHERE `;
-  if (req.body.email) {
-    sql += `clients_email = "${req.body.email}"`;
-  } else {
-    sql += `clients_phone = "${req.body.phone}"`;
-  }
+        WHERE clients_id = ${user_id}`;
 
   DB.connection.query(sql, values, (err, results) => {
     if (results) {
@@ -562,6 +564,7 @@ exports.user_edit = (req, res) => {
     }
   });
 };
+
 exports.order = (req, res) => {
   let sql='';
   if(req.body.id || req.body.limit || req.body.offset){
@@ -984,6 +987,74 @@ exports.setPushId = async (req,res)=>{
         let [rows,fields]= await conn.execute(sql);
         res.send("ADDED");
       }
+    }else{
+        let resBody = {
+          status: "error",
+          id: -17,
+          massage: "Не найдено поле идентификатора устройства.",
+          debug: {
+            "push_id": push_id,
+          },
+        };
+        res.status(500).json(resBody);
+    }
+  } catch (error) {
+    console.log(error)
+    let resBody = {
+      status: "error",
+      id: -17,
+      massage: "Непредвиденная ошибка.",
+      debug: {
+        "error": error,
+      },
+    };
+    res.status(500).json(resBody);
+  }
+}
+
+exports.get_user = async (req,res)=>{
+  let user_id = req.body.user_id;
+  try {
+    let id = req.body.id;
+    if(id){
+      const conn = await mysql.createConnection(DB.config);
+      let sql = `select 
+      c.clients_id as id,
+      c.clients_email as email,
+      c.clients_datetime_add as datetime_add,
+      c.clients_phone as phone,
+      c.clients_name as name,
+      c.clients_surname as surname,
+      c.clients_name_company as name_company,
+      c.clients_view_phone as view_phone,
+      c.clients_lang as lang,
+      city.city_name as city
+
+      from uni_clients c,
+      uni_city city
+      where 
+      c.clients_city_id = city.city_id
+      AND
+      c.clients_id=${id}`;
+      let [rows,fields]= await conn.execute(sql);
+      if(rows.length > 0){
+        if(rows[0].view_phone > 0){
+          res.json(rows[0]);
+        }else{
+          rows[0].phone = 'hidden';
+          res.json(rows[0]);
+        }
+        
+      }else{
+        let resBody = {
+          status: "error",
+          id: -17,
+          massage: "Пользователь с таким id не найден!",
+          debug: {},
+        };
+        res.status(400).json(resBody);
+      }
+      
     }else{
         let resBody = {
           status: "error",
